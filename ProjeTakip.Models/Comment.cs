@@ -12,13 +12,24 @@ namespace ProjeTakip.Models
 	{
 		[Key]
 		public int CommentId { get; set; }
+
 		public string CommentText { get; set; }
 		public DateTime CommentDate { get; set; }
-		public int CommentedBy { get; set; } // Bu UserId olmalı
 
-		// Navigasyon Özelliği
-		public ICollection<Görev> Tasks { get; set; } // Bu koleksiyon eklendi
+		[ForeignKey("TeamLead")]
+		public int TeamLeadId { get; set; }
+
+		[ForeignKey("TeamMember")]
+		public int TeamMemberId { get; set; }
+
+		public bool Enabled { get; set; }
+
+		// Navigasyon Özellikleri
+		public User TeamLead { get; set; }
+		public User TeamMember { get; set; }
+
+		// Task ile olan ilişkiyi temsil eden ICollection özelliği
+		public ICollection<Görev> Tasks { get; set; }
 	}
-
 
 }

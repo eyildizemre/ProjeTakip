@@ -1,11 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using ProjeTakip.DataAccess.Data;
+using ProjeTakip.DataAccess.Repository.IRepository;
+using ProjeTakip.DataAccess.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ProjeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Unit of Work Dependency Injection
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

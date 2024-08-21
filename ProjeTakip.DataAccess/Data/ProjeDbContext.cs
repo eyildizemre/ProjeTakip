@@ -94,6 +94,19 @@ namespace ProjeTakip.DataAccess.Data
 				.WithMany(c => c.Tasks)
 				.HasForeignKey(t => t.TaskCommentId);
 
+			modelBuilder.Entity<Comment>()
+				.HasOne(c => c.TeamLead)
+				.WithMany()
+				.HasForeignKey(c => c.TeamLeadId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Comment>()
+				.HasOne(c => c.TeamMember)
+				.WithMany()
+				.HasForeignKey(c => c.TeamMemberId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			// Seed Verileri
 			modelBuilder.Entity<Role>().HasData(
 				new Role { RoleId = 1, RoleName = "Admin" },
 				new Role { RoleId = 2, RoleName = "Team Lead" },
@@ -120,7 +133,6 @@ namespace ProjeTakip.DataAccess.Data
 					Enabled = true
 				}
 			);
-
 		}
 	}
 }

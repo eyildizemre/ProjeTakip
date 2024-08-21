@@ -37,10 +37,20 @@ namespace ProjeTakip.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CommentedBy")
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TeamLeadId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamMemberId")
                         .HasColumnType("int");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("TeamLeadId");
+
+                    b.HasIndex("TeamMemberId");
 
                     b.ToTable("Comments");
                 });
@@ -388,6 +398,25 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UsersTeams");
+                });
+
+            modelBuilder.Entity("ProjeTakip.Models.Comment", b =>
+                {
+                    b.HasOne("ProjeTakip.Models.User", "TeamLead")
+                        .WithMany()
+                        .HasForeignKey("TeamLeadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjeTakip.Models.User", "TeamMember")
+                        .WithMany()
+                        .HasForeignKey("TeamMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TeamLead");
+
+                    b.Navigation("TeamMember");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Görev", b =>
