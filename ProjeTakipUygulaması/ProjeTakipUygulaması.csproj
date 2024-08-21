@@ -7,14 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ProjeTakip.DataAccess\ProjeTakip.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Areas\Controllers\" />
+    <Folder Include="Areas\Areas\Data\" />
+    <Folder Include="Areas\Areas\Models\" />
+    <Folder Include="Areas\Areas\Views\" />
+    <Folder Include="Areas\TeamLead\Controllers\" />
+    <Folder Include="Areas\TeamLead\Views\" />
+    <Folder Include="Areas\TeamMember\Controllers\" />
+    <Folder Include="Areas\TeamMember\Views\" />
   </ItemGroup>
 
 </Project>

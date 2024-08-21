@@ -38,7 +38,7 @@ namespace ProjeTakip.DataAccess.Repository
 		public ICommentRepository Comments { get; private set; }
 		public INotificationRepository Notifications { get; private set; }
 
-		public int Complete()
+		public int SaveChanges()
 		{
 			return _db.SaveChanges();
 		}

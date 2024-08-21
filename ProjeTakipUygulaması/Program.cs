@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjeTakip.DataAccess.Data;
 using ProjeTakip.DataAccess.Repository.IRepository;
 using ProjeTakip.DataAccess.Repository;
+using ProjeTakipUygulamasý.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<ProjeDbContext>(options => options.UseSqlServer(bu
 
 // Unit of Work Dependency Injection
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<CalendarService>();
 
 var app = builder.Build();
 
@@ -30,7 +33,13 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+);
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();
