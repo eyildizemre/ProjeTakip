@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class UserRole // UserRole tablosu
+	public class UserRole
 	{
 		[Key]
 		public int UserRoleId { get; set; }
@@ -18,5 +18,10 @@ namespace ProjeTakip.Models
 
 		[ForeignKey("RoleId")]
 		public int RoleId { get; set; }
+
+		// Navigasyon Özellikleri
+		public User User { get; set; }
+		public Role Role { get; set; }
 	}
+
 }

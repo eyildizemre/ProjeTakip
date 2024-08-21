@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class User // User tablosu
+	public class User // User tablosu için model sınıfı
 	{
 		[Key]
 		public int UserId { get; set; }
@@ -32,5 +32,12 @@ namespace ProjeTakip.Models
 		public string GitHubProfile { get; set; }
 
 		public bool Enabled { get; set; }
+
+		// Navigasyon Özellikleri
+		public ICollection<UserRole> UserRoles { get; set; }
+		public ICollection<UserTeam> UsersTeams { get; set; }
+		public ICollection<Project> LeadProjects { get; set; }
+		public ICollection<Görev> Tasks { get; set; }
 	}
+
 }

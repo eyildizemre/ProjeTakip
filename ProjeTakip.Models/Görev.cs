@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class Görev // Task tablosu
+	public class Görev
 	{
 		[Key]
 		public int TaskId { get; set; }
@@ -35,5 +35,11 @@ namespace ProjeTakip.Models
 		public int TaskCommentId { get; set; }
 
 		public bool Enabled { get; set; }
+
+		// Navigasyon Özellikleri
+		public User User { get; set; }
+		public Status Status { get; set; }
+		public Comment Comment { get; set; }
 	}
+
 }

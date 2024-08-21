@@ -21,5 +21,9 @@ namespace ProjeTakip.Models
 		public DateTime CreatedAt { get; set; }
 
 		public bool IsRead { get; set; }
+
+		// Navigasyon Özelliği
+		public User User { get; set; }
 	}
+
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class Status // Status tablosu
+	public class Status
 	{
 		[Key]
 		public int StatusId { get; set; }
@@ -19,5 +19,10 @@ namespace ProjeTakip.Models
 
 		[MaxLength(7)]
 		public string StatusColor { get; set; }
+
+		// Navigasyon Özellikleri
+		public ICollection<Project> Projects { get; set; }
+		public ICollection<Görev> Tasks { get; set; }
 	}
+
 }

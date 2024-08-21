@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class Comment // Comment tablosu
+	public class Comment
 	{
 		[Key]
 		public int CommentId { get; set; }
-
 		public string CommentText { get; set; }
-
 		public DateTime CommentDate { get; set; }
+		public int CommentedBy { get; set; } // Bu UserId olmalı
 
-		[ForeignKey("UserId")]
-		public int CommentedBy { get; set; }
-
-		public bool Enabled { get; set; }
+		// Navigasyon Özelliği
+		public ICollection<Görev> Tasks { get; set; } // Bu koleksiyon eklendi
 	}
+
+
 }

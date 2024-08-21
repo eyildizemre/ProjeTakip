@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class Project // Project tablosu
+	public class Project
 	{
 		[Key]
 		public int ProjectId { get; set; }
@@ -21,7 +21,7 @@ namespace ProjeTakip.Models
 		public int TeamId { get; set; }
 
 		[ForeignKey("UserId")]
-		public int TeamLead { get; set; }
+		public int TeamLeadId { get; set; } // Foreign key alanını int olarak tutuyoruz
 
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
@@ -30,5 +30,12 @@ namespace ProjeTakip.Models
 		public int ProjectStatusId { get; set; }
 
 		public bool Enabled { get; set; }
+
+		// Navigasyon Özellikleri
+		public Team Team { get; set; }
+		public Status Status { get; set; }
+		public User TeamLead { get; set; } // TeamLead alanını User türünde tanımlıyoruz
 	}
+
+
 }

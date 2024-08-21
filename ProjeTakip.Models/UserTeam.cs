@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class UsersTeam // UserTeams tablosu
+	public class UserTeam
 	{
 		[Key]
 		public int No { get; set; }
@@ -26,5 +26,11 @@ namespace ProjeTakip.Models
 		public string UserColor { get; set; }
 
 		public bool Enabled { get; set; }
+
+		// Navigasyon Özellikleri
+		public User User { get; set; }
+		public Team Team { get; set; }
+		public Role Role { get; set; }
 	}
+
 }
