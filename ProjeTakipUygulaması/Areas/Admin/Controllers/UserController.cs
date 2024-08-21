@@ -32,7 +32,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddUser(UserVM model)
+        public async Task<IActionResult> AddUser(UserVM model)
         {
             if (ModelState.IsValid)
             {
