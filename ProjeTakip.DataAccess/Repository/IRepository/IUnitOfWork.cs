@@ -19,5 +19,6 @@ namespace ProjeTakip.DataAccess.Repository.IRepository
         ICommentRepository Comments { get; }
         INotificationRepository Notifications { get; }
         int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 }

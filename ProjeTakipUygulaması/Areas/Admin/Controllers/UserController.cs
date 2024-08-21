@@ -36,7 +36,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Şifreyi saltlayıp hashliyoruz
                 var salt = BCrypt.Net.BCrypt.GenerateSalt();
                 var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password, salt);
 
@@ -51,7 +50,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 };
 
                 _unitOfWork.Users.Add(user);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.SaveChangesAsync();  // SaveChanges asenkron hale getirildi
 
                 return RedirectToAction("Index", "Admin");
             }
@@ -61,8 +60,10 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 Text = r.RoleName,
                 Value = r.RoleId.ToString()
             });
+
             return View(model);
         }
+
     }
 }
 
