@@ -19,19 +19,20 @@ namespace ProjeTakip.Models
 
 		public string? TaskDescription { get; set; }
 
-		[ForeignKey("UserId")]
-		public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public int? UserId { get; set; }
+        public User AssignedUser { get; set; } // Göreve atanan kullanıcıyı temsil eden navigasyon property
 
-		public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
 		[MaxLength(255)]
 		public string? GitHubPush { get; set; }
 
-		[ForeignKey("TaskStatusId")]
+		[ForeignKey("StatusId")]
 		public int TaskStatusId { get; set; } = 2;
 
-		[ForeignKey("TaskCommentId")]
+		[ForeignKey("CommentId")]
 		public int? TaskCommentId { get; set; }
 
 		public bool Enabled { get; set; }
@@ -40,6 +41,8 @@ namespace ProjeTakip.Models
         public User User { get; set; }
 		public Status Status { get; set; }
 		public Comment Comment { get; set; }
-	}
+
+        public ICollection<Comment> Comments { get; set; } // Comment ile ilişkili navigasyon özelliği
+    }
 
 }

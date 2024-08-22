@@ -22,14 +22,23 @@ namespace ProjeTakip.Models
 		[ForeignKey("TeamMember")]
 		public int TeamMemberId { get; set; }
 
-		public bool Enabled { get; set; }
+		[ForeignKey("TaskId")]
+        public int TaskId { get; set; }
 
-		// Navigasyon Özellikleri
-		public User TeamLead { get; set; }
-		public User TeamMember { get; set; }
+		[ForeignKey("ProjectId")]
+        public int ProjectId { get; set; }
 
-		// Task ile olan ilişkiyi temsil eden ICollection özelliği
-		public ICollection<Görev> Tasks { get; set; }
-	}
+        public bool Enabled { get; set; }
+
+        // Navigasyon Özellikleri
+        public User TeamLead { get; set; }
+        public User TeamMember { get; set; }
+
+        public Görev Görev { get; set; } // Task ile ilişkiyi tanımlayan navigation property
+        public Project Project { get; set; } // Project ile ilişkiyi tanımlayan navigation property
+
+        // Task ile olan ilişkiyi temsil eden ICollection özelliği
+        public ICollection<Görev> Tasks { get; set; }
+    }
 
 }

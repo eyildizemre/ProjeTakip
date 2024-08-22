@@ -16,9 +16,8 @@ namespace ProjeTakip.Models
 		[Display(Name = "Rol Adı")]
 		public string RoleName { get; set; }
 
-		// Navigasyon Özellikleri
-		public ICollection<UserRole> UserRoles { get; set; }
-		public ICollection<UserTeam> UsersTeams { get; set; }
-	}
-
+        // Navigasyon Özellikleri
+        public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserTeam> UserTeams { get; set; }
+    }
 }

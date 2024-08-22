@@ -25,7 +25,8 @@ namespace ProjeTakip.DataAccess.Repository
 			if (objFromDb != null)
 			{
 				objFromDb.ProjectName = project.ProjectName;
-				objFromDb.TeamId = project.TeamId;
+				objFromDb.ProjectDescription = project.ProjectDescription;
+                objFromDb.TeamId = project.TeamId;
 				objFromDb.TeamLead = project.TeamLead;
 				objFromDb.StartDate = project.StartDate;
 				objFromDb.EndDate = project.EndDate;

@@ -26,7 +26,8 @@ namespace ProjeTakip.DataAccess.Repository
 			{
 				objFromDb.UserId = userRole.UserId;
 				objFromDb.RoleId = userRole.RoleId;
-			}
+                objFromDb.Enabled = userRole.Enabled;
+            }
 		}
 	}
 }

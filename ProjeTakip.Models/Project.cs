@@ -38,7 +38,8 @@ namespace ProjeTakip.Models
 		public Team Team { get; set; }
 		public Status Status { get; set; }
 		public User TeamLead { get; set; } // TeamLead alanını User türünde tanımlıyoruz
-	}
 
-
+        public ICollection<Team> Teams { get; set; } // Proje ile ilişkili takımlar
+        public ICollection<Comment> Comments { get; set; } // Proje ile ilişkili yorumlar
+    }
 }

@@ -12,7 +12,7 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240822181713_Tablolar")]
+    [Migration("20240822210254_Tablolar")]
     partial class Tablolar
     {
         /// <inheritdoc />
@@ -43,6 +43,12 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TeamLeadId")
                         .HasColumnType("int");
 
@@ -50,6 +56,10 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId");
 
                     b.HasIndex("TeamLeadId");
 
@@ -65,6 +75,12 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
+
+                    b.Property<int>("AssignedUserUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CommentId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
@@ -93,12 +109,18 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("TaskId");
 
-                    b.HasIndex("TaskCommentId");
+                    b.HasIndex("AssignedUserUserId");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("TaskCommentId")
+                        .IsUnique()
+                        .HasFilter("[TaskCommentId] IS NOT NULL");
 
                     b.HasIndex("TaskStatusId");
 
@@ -115,6 +137,12 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
+                    b.Property<int?>("CommentedAtId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CommentedById")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -125,12 +153,11 @@ namespace ProjeTakip.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("NotificationId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CommentedAtId");
+
+                    b.HasIndex("CommentedById");
 
                     b.ToTable("Notifications");
                 });
@@ -273,10 +300,16 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeamId"));
 
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("TeamLead")
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamLeadId")
                         .HasColumnType("int");
 
                     b.Property<string>("TeamName")
@@ -285,6 +318,10 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("TeamId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TeamLeadId");
 
                     b.ToTable("Teams");
                 });
@@ -339,9 +376,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$sQJp7ojScitUskzU.1jj7.c6el49SHnJgA.GnytcHy.xLt1XRHEj.",
+                            UserHash = "$2a$11$.yZcuNr9syy3D4nw/VIVw.p7GHm6p/g4fAOxkZsrAnHqiw3PlbtyC",
                             UserLName = "User",
-                            UserSalt = "$2a$11$sQJp7ojScitUskzU.1jj7."
+                            UserSalt = "$2a$11$.yZcuNr9syy3D4nw/VIVw."
                         });
                 });
 
@@ -417,6 +454,18 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Comment", b =>
                 {
+                    b.HasOne("ProjeTakip.Models.Project", "Project")
+                        .WithMany("Comments")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjeTakip.Models.Görev", "Görev")
+                        .WithMany("Comments")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ProjeTakip.Models.User", "TeamLead")
                         .WithMany()
                         .HasForeignKey("TeamLeadId")
@@ -429,6 +478,10 @@ namespace ProjeTakip.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Görev");
+
+                    b.Navigation("Project");
+
                     b.Navigation("TeamLead");
 
                     b.Navigation("TeamMember");
@@ -436,21 +489,33 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Görev", b =>
                 {
-                    b.HasOne("ProjeTakip.Models.Comment", "Comment")
+                    b.HasOne("ProjeTakip.Models.User", "AssignedUser")
                         .WithMany("Tasks")
-                        .HasForeignKey("TaskCommentId");
+                        .HasForeignKey("AssignedUserUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjeTakip.Models.Comment", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("CommentId");
+
+                    b.HasOne("ProjeTakip.Models.Comment", "Comment")
+                        .WithOne()
+                        .HasForeignKey("ProjeTakip.Models.Görev", "TaskCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Tasks")
                         .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.User", "User")
-                        .WithMany("Tasks")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AssignedUser");
 
                     b.Navigation("Comment");
 
@@ -461,13 +526,19 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Notification", b =>
                 {
-                    b.HasOne("ProjeTakip.Models.User", "User")
+                    b.HasOne("ProjeTakip.Models.User", "CommentedAt")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CommentedAtId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("User");
+                    b.HasOne("ProjeTakip.Models.User", "CommentedBy")
+                        .WithMany()
+                        .HasForeignKey("CommentedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CommentedAt");
+
+                    b.Navigation("CommentedBy");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
@@ -475,20 +546,41 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.Team", "Team")
                         .WithMany("Projects")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ProjeTakip.Models.User", "TeamLead")
                         .WithMany("LeadProjects")
-                        .HasForeignKey("TeamLeadId");
+                        .HasForeignKey("TeamLeadId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Status");
 
                     b.Navigation("Team");
+
+                    b.Navigation("TeamLead");
+                });
+
+            modelBuilder.Entity("ProjeTakip.Models.Team", b =>
+                {
+                    b.HasOne("ProjeTakip.Models.Project", "Project")
+                        .WithMany("Teams")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjeTakip.Models.User", "TeamLead")
+                        .WithMany()
+                        .HasForeignKey("TeamLeadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Project");
 
                     b.Navigation("TeamLead");
                 });
@@ -498,7 +590,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasOne("ProjeTakip.Models.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.User", "User")
@@ -515,19 +607,19 @@ namespace ProjeTakip.DataAccess.Migrations
             modelBuilder.Entity("ProjeTakip.Models.UserTeam", b =>
                 {
                     b.HasOne("ProjeTakip.Models.Role", "Role")
-                        .WithMany("UsersTeams")
+                        .WithMany("UserTeams")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.Team", "Team")
-                        .WithMany("UsersTeams")
+                        .WithMany("UserTeams")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.User", "User")
-                        .WithMany("UsersTeams")
+                        .WithMany("UserTeams")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -544,11 +636,23 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Navigation("Tasks");
                 });
 
+            modelBuilder.Entity("ProjeTakip.Models.Görev", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("ProjeTakip.Models.Project", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Teams");
+                });
+
             modelBuilder.Entity("ProjeTakip.Models.Role", b =>
                 {
                     b.Navigation("UserRoles");
 
-                    b.Navigation("UsersTeams");
+                    b.Navigation("UserTeams");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Status", b =>
@@ -562,7 +666,7 @@ namespace ProjeTakip.DataAccess.Migrations
                 {
                     b.Navigation("Projects");
 
-                    b.Navigation("UsersTeams");
+                    b.Navigation("UserTeams");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.User", b =>
@@ -573,7 +677,7 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     b.Navigation("UserRoles");
 
-                    b.Navigation("UsersTeams");
+                    b.Navigation("UserTeams");
                 });
 #pragma warning restore 612, 618
         }

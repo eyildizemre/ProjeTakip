@@ -36,8 +36,12 @@ namespace ProjeTakip.Models.ViewModels
 
         public bool Enabled { get; set; }
 
+        // Durumun ismi, UI'da göstermek için kullanılabilir
+        public string ProjectStatusName { get; set; }
+
         // Dropdowns için gerekli listeler
         public IEnumerable<SelectListItem> Teams { get; set; }
         public IEnumerable<SelectListItem> TeamLeads { get; set; }
     }
+
 }

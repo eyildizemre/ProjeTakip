@@ -159,5 +159,96 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // TeamLead projeyi onaylamak için gönderdiğinde submit edilecek action bu olacak
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitProjectForApproval(int id)
+        {
+            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            // Projeyi onay için gönderildi olarak işaretle
+            project.ProjectStatusId = 3; // "Pending Approval"
+            _unitOfWork.Projects.Update(project);
+            await _unitOfWork.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult Approve(int id)
+        {
+            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id, includeProperties: "Team");
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ProjectVM
+            {
+                ProjectId = project.ProjectId,
+                ProjectName = project.ProjectName,
+                ProjectDescription = project.ProjectDescription,
+                ProjectStatusId = project.ProjectStatusId,
+                ProjectStatusName = project.Status?.StatusName,
+                // Diğer alanlar burada eklenebilir
+            };
+
+            return View(model); // "Approve" view'unu döndürüyoruz
+        }
+
+
+        // Admin projeyi onayladığında veya reddettiğinde submit edilecek action da bu olacak
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveProject(int id, bool isApproved, string comment)
+        {
+            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            if (!isApproved && string.IsNullOrWhiteSpace(comment))
+            {
+                ModelState.AddModelError("Comment", "Proje onaylanmadığında bir yorum eklemeniz zorunludur.");
+                // View'a projeyi ve mevcut durumu geri gönder
+                var model = new ProjectVM
+                {
+                    ProjectId = project.ProjectId,
+                    ProjectName = project.ProjectName,
+                    ProjectDescription = project.ProjectDescription,
+                    ProjectStatusId = project.ProjectStatusId,
+                    ProjectStatusName = project.Status?.StatusName,
+                    // Diğer alanları da doldurmanız gerekebilir
+                };
+                return View(model); // Geri döndüğünüz view için uygun ismi belirtin
+            }
+
+            // Admin onayı durumu
+            project.ProjectStatusId = isApproved ? 4 : 5; // "Completed" veya "Rejected"
+            _unitOfWork.Projects.Update(project);
+            await _unitOfWork.SaveChangesAsync();
+
+            if (!isApproved)
+            {
+                // Yorum ekleme
+                var commentEntry = new Comment
+                {
+                    ProjectId = id,
+                    CommentText = comment,
+                    CommentDate = DateTime.Now,
+                    // Diğer gerekli alanlar
+                };
+                _unitOfWork.Comments.Add(commentEntry);
+                await _unitOfWork.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

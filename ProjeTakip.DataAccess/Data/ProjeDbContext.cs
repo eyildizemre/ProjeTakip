@@ -29,85 +29,200 @@ namespace ProjeTakip.DataAccess.Data
 		{
 			base.OnModelCreating(modelBuilder);
 
-			// Fluent API ile ilişkileri tanımlama
+            // Fluent API ile ilişkileri tanımlama
 
-			// User - UserRole İlişkisi
-			modelBuilder.Entity<UserRole>()
-				.HasOne(ur => ur.User)
-				.WithMany(u => u.UserRoles)
-				.HasForeignKey(ur => ur.UserId);
+            // Role tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Cascade); // Role silindiğinde ilgili UserRoles kayıtları da silinir.
 
-			modelBuilder.Entity<UserRole>()
-				.HasOne(ur => ur.Role)
-				.WithMany(r => r.UserRoles)
-				.HasForeignKey(ur => ur.RoleId);
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.UserTeams)
+                .WithOne(ut => ut.Role)
+                .HasForeignKey(ut => ut.RoleId)
+                .OnDelete(DeleteBehavior.Cascade); // Role silindiğinde ilgili UsersTeams kayıtları da silinir.
 
-			// User - UsersTeam İlişkisi
-			modelBuilder.Entity<UserTeam>()
-				.HasOne(ut => ut.User)
-				.WithMany(u => u.UsersTeams)
-				.HasForeignKey(ut => ut.UserId);
+            // UserRole tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserRole kayıtları da silinir.
 
-			modelBuilder.Entity<UserTeam>()
-				.HasOne(ut => ut.Team)
-				.WithMany(t => t.UsersTeams)
-				.HasForeignKey(ut => ut.TeamId);
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Restrict); // Rol silindiğinde UserRole silinmez.
 
-			modelBuilder.Entity<UserTeam>()
-				.HasOne(ut => ut.Role)
-				.WithMany(r => r.UsersTeams)
-				.HasForeignKey(ut => ut.RoleId);
-
-			// Team - Project İlişkisi
-			modelBuilder.Entity<Project>()
+            // Project tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Project>()
 				.HasOne(p => p.Team)
 				.WithMany(t => t.Projects)
-				.HasForeignKey(p => p.TeamId);
+				.HasForeignKey(p => p.TeamId)
+				.OnDelete(DeleteBehavior.Restrict); // Eğer bir takım silinirse, projedeki TeamId null olacak.
 
-			// User - Project İlişkisi (Team Lead)
-			modelBuilder.Entity<Project>()
-				.HasOne(p => p.TeamLead)
-				.WithMany(u => u.LeadProjects)
-				.HasForeignKey(p => p.TeamLeadId);
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.TeamLead)
+                .WithMany()
+                .HasForeignKey(p => p.TeamLeadId)
+                .OnDelete(DeleteBehavior.SetNull); // Eğer bir takım lideri silinirse, projedeki TeamLeadId null olacak.
 
-			// User - Task İlişkisi
-			modelBuilder.Entity<Görev>()
-				.HasOne(t => t.User)
-				.WithMany(u => u.Tasks)
-				.HasForeignKey(t => t.UserId);
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.ProjectStatusId)
+                .OnDelete(DeleteBehavior.Restrict); // Eğer bir durum silinirse, proje silinmeyecek.
 
-			// Status - Project İlişkisi
-			modelBuilder.Entity<Project>()
-				.HasOne(p => p.Status)
-				.WithMany(s => s.Projects)
-				.HasForeignKey(p => p.ProjectStatusId);
+            modelBuilder.Entity<Project>()
+                .HasMany(p => p.Comments)
+                .WithOne(c => c.Project)
+                .HasForeignKey(c => c.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade); // Proje silindiğinde ilişkili yorumlar da silinir.
 
-			// Status - Task İlişkisi
-			modelBuilder.Entity<Görev>()
-				.HasOne(t => t.Status)
-				.WithMany(s => s.Tasks)
-				.HasForeignKey(t => t.TaskStatusId);
+            // Team tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Team>()
+                .HasOne(t => t.TeamLead)
+                .WithMany()
+                .HasForeignKey(t => t.TeamLeadId)
+                .OnDelete(DeleteBehavior.Restrict); // TeamLead silindiğinde TeamLeadId null yapılmayacak.
 
-			// Task - Comment İlişkisi
-			modelBuilder.Entity<Görev>()
-				.HasOne(t => t.Comment)
-				.WithMany(c => c.Tasks)
-				.HasForeignKey(t => t.TaskCommentId);
+            modelBuilder.Entity<Team>()
+                .HasOne(t => t.Project)
+                .WithMany(p => p.Teams)
+                .HasForeignKey(t => t.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade); // Project silindiğinde ilişkili Teams kayıtları da silinir.
 
-			modelBuilder.Entity<Comment>()
+            modelBuilder.Entity<Team>()
+                .HasMany(t => t.UserTeams)
+                .WithOne(ut => ut.Team)
+                .HasForeignKey(ut => ut.TeamId)
+                .OnDelete(DeleteBehavior.Cascade); // Ekip silindiğinde ilişkili UserTeams kayıtları da silinir.
+
+            // User tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserRoles)
+                .WithOne(ur => ur.User)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserRoles kayıtları da silinir.
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserTeams)
+                .WithOne(ut => ut.User)
+                .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserTeams kayıtları da silinir.
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.LeadProjects)
+                .WithOne(p => p.TeamLead)
+                .HasForeignKey(p => p.TeamLeadId)
+                .OnDelete(DeleteBehavior.SetNull); // Kullanıcı silindiğinde LeadProjects'teki TeamLeadId null yapılır.
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Tasks)
+                .WithOne(t => t.AssignedUser)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili görevler silinmez.
+
+            // UserTeam tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<UserTeam>()
+                .HasOne(ut => ut.User)
+                .WithMany(u => u.UserTeams)
+                .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserTeam kayıtları da silinir.
+
+            modelBuilder.Entity<UserTeam>()
+                .HasOne(ut => ut.Team)
+                .WithMany(t => t.UserTeams)
+                .HasForeignKey(ut => ut.TeamId)
+                .OnDelete(DeleteBehavior.Cascade); // Ekip silindiğinde ilişkili UserTeam kayıtları da silinir.
+
+            modelBuilder.Entity<UserTeam>()
+                .HasOne(ut => ut.Role)
+                .WithMany(r => r.UserTeams)
+                .HasForeignKey(ut => ut.RoleId)
+                .OnDelete(DeleteBehavior.Restrict); // Rol silindiğinde UserTeam kayıtları silinmez.
+
+            // Görev tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Görev>()
+				.HasOne(g => g.User)
+				.WithMany()
+				.HasForeignKey(g => g.UserId)
+				.OnDelete(DeleteBehavior.Restrict); // User silindiğinde görev silinmez.
+
+            modelBuilder.Entity<Görev>()
+                .HasOne(g => g.Status)
+                .WithMany()
+                .HasForeignKey(g => g.TaskStatusId)
+                .OnDelete(DeleteBehavior.Restrict); // Status silindiğinde görev silinmez.
+
+            modelBuilder.Entity<Görev>()
+                .HasOne(g => g.Comment)
+                .WithOne()
+                .HasForeignKey<Görev>(g => g.TaskCommentId)
+                .OnDelete(DeleteBehavior.Restrict); // Comment silindiğinde görevten yorum kaldırılır.
+
+            modelBuilder.Entity<Görev>()
+                .HasMany(g => g.Comments)
+                .WithOne(c => c.Görev)
+                .HasForeignKey(c => c.TaskId)
+                .OnDelete(DeleteBehavior.Cascade); // Görev silindiğinde ilişkili yorumlar da silinir.
+
+            // Comment tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Comment>()
 				.HasOne(c => c.TeamLead)
 				.WithMany()
 				.HasForeignKey(c => c.TeamLeadId)
-				.OnDelete(DeleteBehavior.Restrict);
+				.OnDelete(DeleteBehavior.Restrict); // Bu, TeamLead silindiğinde Comment'in silinmemesini sağlar.
 
-			modelBuilder.Entity<Comment>()
-				.HasOne(c => c.TeamMember)
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.TeamMember)
+                .WithMany()
+                .HasForeignKey(c => c.TeamMemberId)
+                .OnDelete(DeleteBehavior.Restrict); // Bu, TeamMember silindiğinde Comment'in silinmemesini sağlar.
+
+            modelBuilder.Entity<Comment>()
+				.HasOne(c => c.Görev)
+				.WithMany(t => t.Comments)
+				.HasForeignKey(c => c.TaskId)
+				.OnDelete(DeleteBehavior.Restrict); // Bu, Task silindiğinde ilgili Comment'lerin de silinmesini sağlar.
+
+            modelBuilder.Entity<Comment>()
+				.HasOne(c => c.Project)  // Project navigation property kullanılmalı
+				.WithMany(p => p.Comments)
+				.HasForeignKey(c => c.ProjectId)
+				.OnDelete(DeleteBehavior.Cascade); // Bu, Project silindiğinde ilgili Comment'lerin de silinmesini sağlar.
+
+            // Status tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Status>()
+                .HasMany(s => s.Projects)
+                .WithOne(p => p.Status)
+                .HasForeignKey(p => p.ProjectStatusId)
+                .OnDelete(DeleteBehavior.Restrict); // Status silindiğinde ilişkili projeler silinmez.
+
+            modelBuilder.Entity<Status>()
+                .HasMany(s => s.Tasks)
+                .WithOne(t => t.Status)
+                .HasForeignKey(t => t.TaskStatusId)
+                .OnDelete(DeleteBehavior.Restrict); // Status silindiğinde ilişkili görevler silinmez.
+
+            // Notification tablosu ile diğer tablolar arasındaki ilişkiler
+            modelBuilder.Entity<Notification>()
+				.HasOne(n => n.CommentedBy)
 				.WithMany()
-				.HasForeignKey(c => c.TeamMemberId)
-				.OnDelete(DeleteBehavior.Restrict);
+				.HasForeignKey(n => n.CommentedById)
+				.OnDelete(DeleteBehavior.Restrict); // Bildirimi oluşturan kişi silinse bile bildirimler silinmez
 
-			// Seed Verileri
-			modelBuilder.Entity<Role>().HasData(
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.CommentedAt)
+                .WithMany()
+                .HasForeignKey(n => n.CommentedAtId)
+                .OnDelete(DeleteBehavior.Restrict); // Bildirimin ilgili olduğu kişi silinse bile bildirimler silinmez
+
+            // Seed Verileri
+            modelBuilder.Entity<Role>().HasData(
 				new Role { RoleId = 1, RoleName = "Admin" },
 				new Role { RoleId = 2, RoleName = "Team Lead" },
 				new Role { RoleId = 3, RoleName = "Team Member" }

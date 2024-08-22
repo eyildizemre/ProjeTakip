@@ -24,8 +24,9 @@ namespace ProjeTakip.DataAccess.Repository
 			var objFromDb = _context.Notifications.FirstOrDefault(n => n.NotificationId == notification.NotificationId);
 			if (objFromDb != null)
 			{
-				objFromDb.UserId = notification.UserId;
-				objFromDb.Message = notification.Message;
+				objFromDb.CommentedById = notification.CommentedById;
+                objFromDb.CommentedAtId = notification.CommentedAtId;
+                objFromDb.Message = notification.Message;
 				objFromDb.CreatedAt = notification.CreatedAt;
 				objFromDb.IsRead = notification.IsRead;
 			}

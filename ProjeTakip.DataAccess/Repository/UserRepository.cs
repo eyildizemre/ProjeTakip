@@ -31,7 +31,10 @@ namespace ProjeTakip.DataAccess.Repository
 				// Şifreyi hashleyip saltladıktan sonra kaydetme işlemi
 				objFromDb.UserSalt = user.UserSalt; // Saltı kaydeder
 				objFromDb.UserHash = user.UserHash; // Hashlenmiş şifreyi kaydeder
-			}
+
+                objFromDb.GitHubProfile = user.GitHubProfile;
+                objFromDb.Enabled = user.Enabled;
+            }
 		}
 
 		public IEnumerable<User> GetUsersWithTasks()

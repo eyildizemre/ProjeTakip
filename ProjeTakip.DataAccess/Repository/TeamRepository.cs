@@ -25,14 +25,16 @@ namespace ProjeTakip.DataAccess.Repository
 			if (objFromDb != null)
 			{
 				objFromDb.TeamName = team.TeamName;
-				objFromDb.TeamLead = team.TeamLead;
-				objFromDb.Enabled = team.Enabled;
+				objFromDb.TeamLeadId = team.TeamLeadId;
+                objFromDb.ProjectId = team.ProjectId;
+                objFromDb.Capacity = team.Capacity;
+                objFromDb.Enabled = team.Enabled;
 			}
 		}
 
 		public IEnumerable<Team> GetUsersWithTasks()
 		{
-			return _context.Teams.Include(t => t.UsersTeams).ThenInclude(ut => ut.User).Include(t => t.Projects).ToList();
+			return _context.Teams.Include(t => t.UserTeams).ThenInclude(ut => ut.User).Include(t => t.Projects).ToList();
 		}
 	}
 }

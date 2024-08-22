@@ -36,10 +36,10 @@ namespace ProjeTakip.Models
 
 		public bool Enabled { get; set; }
 
-		// Navigasyon Özellikleri
-		public ICollection<UserRole> UserRoles { get; set; }
-		public ICollection<UserTeam> UsersTeams { get; set; }
-		public ICollection<Project> LeadProjects { get; set; }
+        // Navigasyon Özellikleri
+        public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserTeam> UserTeams { get; set; } // Ekiplerle olan ilişkiyi temsil eder
+        public ICollection<Project> LeadProjects { get; set; }
 		public ICollection<Görev> Tasks { get; set; }
 	}
 

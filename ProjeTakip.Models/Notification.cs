@@ -8,22 +8,28 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.Models
 {
-	public class Notification
-	{
-		[Key]
-		public int NotificationId { get; set; }
+    public class Notification
+    {
+        [Key]
+        public int NotificationId { get; set; }
 
-		[ForeignKey("UserId")]
-		public int UserId { get; set; }
+        // Bildirimi oluşturan kişi (örn. TeamMember, Admin)
+        [ForeignKey("CommentedById")]
+        public int? CommentedById { get; set; }
+        public User CommentedBy { get; set; }
 
-		public string Message { get; set; }
+        // Bildirimin ilgili olduğu kişi (örn. TeamLead, Admin)
+        [ForeignKey("CommentedAtId")]
+        public int? CommentedAtId { get; set; }
+        public User CommentedAt { get; set; }
 
-		public DateTime CreatedAt { get; set; }
+        // Bildirimin metni
+        public string Message { get; set; }
 
-		public bool? IsRead { get; set; } = false;
+        // Bildirimin oluşturulma tarihi
+        public DateTime CreatedAt { get; set; }
 
-        // Navigasyon Özelliği
-        public User User { get; set; }
-	}
-
+        // Bildirimin okunma durumu
+        public bool? IsRead { get; set; } = false;
+    }
 }

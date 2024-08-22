@@ -28,7 +28,9 @@ namespace ProjeTakip.DataAccess.Repository
 				objFromDb.CommentDate = comment.CommentDate;
 				objFromDb.TeamLeadId = comment.TeamLeadId;
 				objFromDb.TeamMemberId = comment.TeamMemberId;
-				objFromDb.Enabled = comment.Enabled;
+				objFromDb.TaskId = comment.TaskId;
+                objFromDb.ProjectId = comment.ProjectId;
+                objFromDb.Enabled = comment.Enabled;
 			}
 		}
 	}
