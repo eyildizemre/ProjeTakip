@@ -70,18 +70,16 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("GitHubPush")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TaskCommentId")
+                    b.Property<int?>("TaskCommentId")
                         .HasColumnType("int");
 
                     b.Property<string>("TaskDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TaskName")
@@ -117,7 +115,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsRead")
+                    b.Property<bool?>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
@@ -296,7 +294,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("GitHubProfile")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -349,6 +346,9 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserRoleId"));
 
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -362,6 +362,15 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserRoleId = 1,
+                            Enabled = true,
+                            RoleId = 1,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.UserTeam", b =>
@@ -382,7 +391,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserColor")
-                        .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
 
@@ -423,9 +431,7 @@ namespace ProjeTakip.DataAccess.Migrations
                 {
                     b.HasOne("ProjeTakip.Models.Comment", "Comment")
                         .WithMany("Tasks")
-                        .HasForeignKey("TaskCommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskCommentId");
 
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Tasks")

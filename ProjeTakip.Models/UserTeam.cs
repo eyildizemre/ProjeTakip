@@ -23,7 +23,7 @@ namespace ProjeTakip.Models
 		public int RoleId { get; set; }
 
 		[MaxLength(7)]
-		public string UserColor { get; set; }
+		public string? UserColor { get; set; }
 
 		public bool Enabled { get; set; }
 

@@ -27,9 +27,9 @@ namespace ProjeTakip.Models
 		public DateTime EndDate { get; set; }
 
 		[ForeignKey("StatusId")]
-		public int ProjectStatusId { get; set; }
+		public int ProjectStatusId { get; set; } = 1; // Team Lead ilk görevi verdiği zaman proje durumu 2 olacak
 
-		public bool Enabled { get; set; }
+        public bool Enabled { get; set; }
 
 		// Navigasyon Özellikleri
 		public Team Team { get; set; }

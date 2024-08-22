@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjeTakip.Models.ViewModels
 {
     public class UserVM
     {
+        public int UserId { get; set; }  // Update işlemi için gerekli
+
         [Required]
         [Display(Name = "Kullanıcı Adı")]
         public string UserFName { get; set; }
@@ -26,9 +25,13 @@ namespace ProjeTakip.Models.ViewModels
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Şifre")]
-        public string Password { get; set; }
+        public string Password { get; set; }  // Update işleminde gerekli olmayabilir
 
-        // Rolleri seçmek için bir liste
+        public string? GitHubProfile { get; set; }
+
+        [Required]
+        public int RoleId { get; set; }
+        [ValidateNever]
         public IEnumerable<SelectListItem> Roles { get; set; }
     }
 }

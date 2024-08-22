@@ -17,7 +17,7 @@ namespace ProjeTakip.Models
 		[Display(Name = "Görev İsmi")]
 		public string TaskName { get; set; }
 
-		public string TaskDescription { get; set; }
+		public string? TaskDescription { get; set; }
 
 		[ForeignKey("UserId")]
 		public int UserId { get; set; }
@@ -26,18 +26,18 @@ namespace ProjeTakip.Models
 		public DateTime EndDate { get; set; }
 
 		[MaxLength(255)]
-		public string GitHubPush { get; set; }
+		public string? GitHubPush { get; set; }
 
 		[ForeignKey("TaskStatusId")]
-		public int TaskStatusId { get; set; }
+		public int TaskStatusId { get; set; } = 2;
 
 		[ForeignKey("TaskCommentId")]
-		public int TaskCommentId { get; set; }
+		public int? TaskCommentId { get; set; }
 
 		public bool Enabled { get; set; }
 
-		// Navigasyon Özellikleri
-		public User User { get; set; }
+        // Navigasyon Özellikleri
+        public User User { get; set; }
 		public Status Status { get; set; }
 		public Comment Comment { get; set; }
 	}

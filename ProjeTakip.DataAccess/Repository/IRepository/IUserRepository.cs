@@ -11,6 +11,7 @@ namespace ProjeTakip.DataAccess.Repository.IRepository
 	{
 		void Update(User user); // User nesnesini güncellemek için özel bir metot
 		IEnumerable<User> GetUsersWithTasks(); // Task'leri ile birlikte User'ları almak için bir örnek metot
+
 	}
 
 }

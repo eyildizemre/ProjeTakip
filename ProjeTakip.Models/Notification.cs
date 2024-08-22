@@ -20,10 +20,10 @@ namespace ProjeTakip.Models
 
 		public DateTime CreatedAt { get; set; }
 
-		public bool IsRead { get; set; }
+		public bool? IsRead { get; set; } = false;
 
-		// Navigasyon Özelliği
-		public User User { get; set; }
+        // Navigasyon Özelliği
+        public User User { get; set; }
 	}
 
 }

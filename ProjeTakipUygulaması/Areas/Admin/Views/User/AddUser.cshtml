@@ -1,0 +1,49 @@
+﻿@model ProjeTakip.Models.ViewModels.UserVM
+
+@{
+    ViewBag.Title = "Kullanıcı Ekle";
+}
+
+@* @Html.AntiForgeryToken() *@
+
+<h2>Kullanıcı Ekle</h2>
+
+<form asp-action="AddUser" method="post">
+    <div class="form-group">
+        <label asp-for="UserFName"></label>
+        <input asp-for="UserFName" class="form-control" />
+        <span asp-validation-for="UserFName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="UserLName"></label>
+        <input asp-for="UserLName" class="form-control" />
+        <span asp-validation-for="UserLName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="GitHubProfile"></label>
+        <input asp-for="GitHubProfile" class="form-control" />
+        <span asp-validation-for="GitHubProfile" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RoleId"></label>
+        <select asp-for="RoleId" asp-items="Model.Roles" class="form-control"></select>
+        <span asp-validation-for="RoleId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kullanıcı Ekle</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -133,6 +133,9 @@ namespace ProjeTakip.DataAccess.Data
 					Enabled = true
 				}
 			);
+
+			modelBuilder.Entity<UserRole>().HasData(
+				new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true });
 		}
-	}
+    }
 }

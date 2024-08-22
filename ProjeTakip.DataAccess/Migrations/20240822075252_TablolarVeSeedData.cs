@@ -66,7 +66,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     UserEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserSalt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GitHubProfile = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    GitHubProfile = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -112,7 +112,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                    IsRead = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -169,7 +169,8 @@ namespace ProjeTakip.DataAccess.Migrations
                     UserRoleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -197,7 +198,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TeamId = table.Column<int>(type: "int", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
+                    UserColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -230,13 +231,13 @@ namespace ProjeTakip.DataAccess.Migrations
                     TaskId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    TaskDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaskDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GitHubPush = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    GitHubPush = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     TaskStatusId = table.Column<int>(type: "int", nullable: false),
-                    TaskCommentId = table.Column<int>(type: "int", nullable: false),
+                    TaskCommentId = table.Column<int>(type: "int", nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -246,8 +247,7 @@ namespace ProjeTakip.DataAccess.Migrations
                         name: "FK_Tasks_Comments_TaskCommentId",
                         column: x => x.TaskCommentId,
                         principalTable: "Comments",
-                        principalColumn: "CommentId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CommentId");
                     table.ForeignKey(
                         name: "FK_Tasks_Status_TaskStatusId",
                         column: x => x.TaskStatusId,
@@ -287,6 +287,11 @@ namespace ProjeTakip.DataAccess.Migrations
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
                 values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "Admin123*", "User", "" });
+
+            migrationBuilder.InsertData(
+                table: "UserRoles",
+                columns: new[] { "UserRoleId", "Enabled", "RoleId", "UserId" },
+                values: new object[] { 1, true, 1, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_TeamLeadId",

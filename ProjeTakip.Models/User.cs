@@ -12,15 +12,18 @@ namespace ProjeTakip.Models
 		[Key]
 		public int UserId { get; set; }
 
+		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Kullanıcı Adı")]
 		public string UserFName { get; set; }
 
-		[MaxLength(100)]
+        [Required]
+        [MaxLength(100)]
 		[Display(Name = "Kullanıcı Soyadı")]
 		public string UserLName { get; set; }
 
-		[MaxLength(255)]
+        [Required]
+        [MaxLength(255)]
 		[Display(Name = "Kullanıcı E-Posta")]
 		public string UserEmail { get; set; }
 
@@ -29,7 +32,7 @@ namespace ProjeTakip.Models
 
 		[MaxLength(255)]
 		[Display(Name = "Kullanıcı GitHub Profili")]
-		public string GitHubProfile { get; set; }
+		public string? GitHubProfile { get; set; }
 
 		public bool Enabled { get; set; }
 

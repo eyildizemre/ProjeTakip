@@ -43,7 +43,12 @@ namespace ProjeTakip.DataAccess.Repository
 			return _db.SaveChanges();
 		}
 
-		public void Dispose()
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _db.SaveChangesAsync();
+        }
+
+        public void Dispose()
 		{
 			_db.Dispose();
 		}
