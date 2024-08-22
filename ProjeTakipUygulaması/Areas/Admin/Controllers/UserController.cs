@@ -19,6 +19,23 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public IActionResult AllUsers()
+        {
+            // Enabled = true olan kullanıcıları getir ve Admin'i dışarıda tut
+            var users = _unitOfWork.Users.GetAll().Where(u => u.Enabled && u.UserEmail != User.Identity.Name)
+                .Select(u => new UserVM
+                {
+                    UserId = u.UserId,
+                    UserFName = u.UserFName,
+                    UserLName = u.UserLName,
+                    Email = u.UserEmail,
+                    GitHubProfile = u.GitHubProfile
+                }).ToList();
+
+            return View(users);
+        }
+
+        [HttpGet]
         public IActionResult AddUser()
         {
             var model = new UserVM
@@ -39,8 +56,10 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             model.RoleId = Convert.ToInt32(Request.Form["RoleId"]);
             if (ModelState.IsValid)
             {
+                // Şifre oluşturma
+                string generatedPassword = $"{model.UserFName}.{model.UserLName}1*";
                 var salt = BCrypt.Net.BCrypt.GenerateSalt();
-                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password, salt);
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(generatedPassword, salt);
 
                 var user = new User
                 {
@@ -64,7 +83,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 _unitOfWork.UserRoles.Add(userRole);
                 await _unitOfWork.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Home"); // HomePage'e yönlendiriliyor
+                return RedirectToAction("Index", "Admin", new { area = "Admin" });
             }
 
             model.Roles = _unitOfWork.Roles.GetAll().Select(r => new SelectListItem
@@ -109,6 +128,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 var user = _unitOfWork.Users.GetFirstOrDefault(u => u.UserId == model.UserId, includeProperties: "UserRoles");
                 if (user == null) return NotFound();
 
+                // Enabled'ı güncellemiyoruz, sadece diğer alanları güncelliyoruz
                 user.UserFName = model.UserFName;
                 user.UserLName = model.UserLName;
                 user.UserEmail = model.Email;
@@ -133,6 +153,8 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 }
 
                 await _unitOfWork.SaveChangesAsync();
+
+                TempData["success"] = "Kullanıcı başarıyla güncellendi!";
                 return RedirectToAction("Index", "Admin");
             }
 
@@ -145,9 +167,37 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
+        public IActionResult DeleteUser(int id)
+        {
+            var user = _unitOfWork.Users.GetFirstOrDefault(u => u.UserId == id, includeProperties: "UserRoles");
+            if (user == null || !user.Enabled)
+            {
+                return NotFound(); // Kullanıcı bulunamazsa veya devre dışıysa
+            }
+
+            var model = new UserVM
+            {
+                UserId = user.UserId,
+                UserFName = user.UserFName,
+                UserLName = user.UserLName,
+                Email = user.UserEmail,
+                GitHubProfile = user.GitHubProfile,
+                RoleId = user.UserRoles.FirstOrDefault()?.RoleId ?? 0,
+                Roles = _unitOfWork.Roles.GetAll().Select(r => new SelectListItem
+                {
+                    Text = r.RoleName,
+                    Value = r.RoleId.ToString()
+                }),
+                Enabled = user.Enabled
+            };
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("DeleteUser")]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUserPOST(int id)
         {
             var user = _unitOfWork.Users.GetFirstOrDefault(u => u.UserId == id);
             if (user == null) return NotFound();
@@ -155,7 +205,16 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             user.Enabled = false; // Kullanıcıyı devre dışı bırak
             _unitOfWork.Users.Update(user);
 
-            // RoleId'yi 0 yapma işlemini kaldırıyoruz, sadece Enabled'ı false yapıyoruz
+            await _unitOfWork.SaveChangesAsync();
+
+            // Kullanıcı devre dışı bırakıldığında, ilgili UserRoles kayıtlarını da devre dışı bırak
+            var userRoles = _unitOfWork.UserRoles.GetAll().Where(ur => ur.UserId == user.UserId).ToList();
+            foreach (var ur in userRoles)
+            {
+                ur.Enabled = false;
+                _unitOfWork.UserRoles.Update(ur);
+            }
+
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index", "Admin");
         }

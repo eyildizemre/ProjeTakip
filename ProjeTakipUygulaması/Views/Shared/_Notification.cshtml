@@ -1,0 +1,20 @@
+﻿@*Her sayfaya ayrı ayrı eklemektense Partial View olarak oluşturmak daha mantıklı.*@
+
+@if (TempData["success"] != null)
+{
+    @*JQuery'ye de ihtiyaç olduğundan onu da eklemeliyiz.*@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.success('@TempData["success"]');
+    </script>
+}
+@if (TempData["error"] != null)
+{
+    @*JQuery'ye de ihtiyaç olduğundan onu da eklemeliyiz.*@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["success"]');
+    </script>
+}

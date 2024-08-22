@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Areas\**" />
+    <Content Remove="Areas\Areas\**" />
+    <EmbeddedResource Remove="Areas\Areas\**" />
+    <None Remove="Areas\Areas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -20,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Areas\Controllers\" />
-    <Folder Include="Areas\Areas\Data\" />
-    <Folder Include="Areas\Areas\Models\" />
-    <Folder Include="Areas\Areas\Views\" />
     <Folder Include="Areas\TeamLead\Controllers\" />
     <Folder Include="Areas\TeamLead\Views\" />
     <Folder Include="Areas\TeamMember\Controllers\" />

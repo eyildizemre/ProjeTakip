@@ -120,15 +120,18 @@ namespace ProjeTakip.DataAccess.Data
 				new Status { StatusId = 4, StatusName = "Failed", StatusColor = "#FFFF00" }
 			);
 
-			modelBuilder.Entity<User>().HasData(
+            var salt = BCrypt.Net.BCrypt.GenerateSalt();
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("Admin123*", salt);
+
+            modelBuilder.Entity<User>().HasData(
 				new User
 				{
 					UserId = 1,
 					UserFName = "Admin",
 					UserLName = "User",
 					UserEmail = "admin@gmail.com",
-					UserSalt = string.Empty,
-					UserHash = "Admin123*",
+					UserSalt = salt,
+					UserHash = hashedPassword,
 					GitHubProfile = "https://github.com/eyildizemre",
 					Enabled = true
 				}

@@ -1,0 +1,23 @@
+﻿@model ProjeTakip.Models.ViewModels.LoginVM
+
+<h2>Kullanıcı Girişi</h2>
+
+<form asp-controller="Account" asp-action="Login" method="post">
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Giriş Yap</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

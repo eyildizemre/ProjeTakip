@@ -12,8 +12,8 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240822075252_TablolarVeSeedData")]
-    partial class TablolarVeSeedData
+    [Migration("20240822132829_Tablolar")]
+    partial class Tablolar
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -335,9 +335,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "Admin123*",
+                            UserHash = "$2a$11$rkfTPESKX5gDk8hZ7XFo9eL0vHIj7zJ5ce4Jz/pATixKVW5N6I5vm",
                             UserLName = "User",
-                            UserSalt = ""
+                            UserSalt = "$2a$11$rkfTPESKX5gDk8hZ7XFo9e"
                         });
                 });
 

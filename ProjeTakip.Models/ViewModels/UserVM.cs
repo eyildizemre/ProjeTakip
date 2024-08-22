@@ -22,15 +22,20 @@ namespace ProjeTakip.Models.ViewModels
         [Display(Name = "E-posta")]
         public string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Şifre")]
-        public string Password { get; set; }  // Update işleminde gerekli olmayabilir
+        // Admin tarafından kullanıcı oluşturuluyorken şifre otomatik olarak oluşturulacağı için artık ihtiyaç yok.
+        //[Required]
+        //[DataType(DataType.Password)]
+        //[Display(Name = "Şifre")]
+        //public string Password { get; set; }  // Update işleminde gerekli olmayabilir
+        //[ValidateNever]
 
         public string? GitHubProfile { get; set; }
 
         [Required]
         public int RoleId { get; set; }
+
+        public bool Enabled { get; set; }
+
         [ValidateNever]
         public IEnumerable<SelectListItem> Roles { get; set; }
     }

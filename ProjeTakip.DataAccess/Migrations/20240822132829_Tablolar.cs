@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjeTakip.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class TablolarVeSeedData : Migration
+    public partial class Tablolar : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -286,7 +286,7 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "Admin123*", "User", "" });
+                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$rkfTPESKX5gDk8hZ7XFo9eL0vHIj7zJ5ce4Jz/pATixKVW5N6I5vm", "User", "$2a$11$rkfTPESKX5gDk8hZ7XFo9e" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",

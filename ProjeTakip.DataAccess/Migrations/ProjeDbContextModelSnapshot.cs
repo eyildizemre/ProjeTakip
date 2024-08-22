@@ -332,9 +332,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "Admin123*",
+                            UserHash = "$2a$11$rkfTPESKX5gDk8hZ7XFo9eL0vHIj7zJ5ce4Jz/pATixKVW5N6I5vm",
                             UserLName = "User",
-                            UserSalt = ""
+                            UserSalt = "$2a$11$rkfTPESKX5gDk8hZ7XFo9e"
                         });
                 });
 

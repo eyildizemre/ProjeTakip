@@ -8,6 +8,8 @@
         <div class="col-md-3">
             <!-- Sidebar -->
             <div class="list-group">
+                <a href="@Url.Action("AllUsers", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Denetimi</a>
+                <a href="@Url.Action("AddUser", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Ekle</a>
                 <a href="@Url.Action("Index", "Projects", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Ekle</a>
                 <a href="@Url.Action("Edit", "Projects", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Düzenle</a>
                 <a href="@Url.Action("Index", "Teams", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Ekle</a>
