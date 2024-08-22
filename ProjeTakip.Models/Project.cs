@@ -17,11 +17,14 @@ namespace ProjeTakip.Models
 		[Display(Name = "Proje İsmi")]
 		public string ProjectName { get; set; }
 
-		[ForeignKey("TeamId")]
-		public int TeamId { get; set; }
+		[Display(Name = "Proje Açıklaması")]
+        public string ProjectDescription { get; set; }
+
+        [ForeignKey("TeamId")]
+		public int? TeamId { get; set; }
 
 		[ForeignKey("UserId")]
-		public int TeamLeadId { get; set; } // Foreign key alanını int olarak tutuyoruz
+		public int? TeamLeadId { get; set; } // Foreign key alanını int olarak tutuyoruz
 
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }

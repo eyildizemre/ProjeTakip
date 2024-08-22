@@ -9,7 +9,7 @@ namespace ProjeTakip.DataAccess.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
+        IEnumerable<T> GetAll(string? includeProperties = null); // includeProperties parametresi eklendi
         T Get(object primaryKey);
         void Add(T entity);
         void Remove(object primaryKey);

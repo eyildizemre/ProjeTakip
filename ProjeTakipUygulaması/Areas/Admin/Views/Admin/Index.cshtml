@@ -10,12 +10,14 @@
             <div class="list-group">
                 <a href="@Url.Action("AllUsers", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Denetimi</a>
                 <a href="@Url.Action("AddUser", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Ekle</a>
-                <a href="@Url.Action("Index", "Projects", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Ekle</a>
-                <a href="@Url.Action("Edit", "Projects", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Düzenle</a>
-                <a href="@Url.Action("Index", "Teams", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Ekle</a>
-                <a href="@Url.Action("Edit", "Teams", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Düzenle</a>
-                <a href="@Url.Action("Index", "Users", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Yönetimi</a>
-                <a href="@Url.Action("Index", "Notifications", new { area = "Admin" })" class="list-group-item list-group-item-action">Bildirimler</a>
+                <a href="@Url.Action("Index", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Projeleri Görüntüle</a>
+                <a href="@Url.Action("Create", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Ekle</a>
+                <a href="@Url.Action("Edit", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Düzenle</a>
+                <a href="@Url.Action("Index", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekipleri Görüntüle</a>
+                <a href="@Url.Action("Create", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Ekle</a>
+                <a href="@Url.Action("Edit", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Düzenle</a>
+                <a href="@Url.Action("Index", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Yönetimi</a>
+                <a href="@Url.Action("Index", "Notification", new { area = "Admin" })" class="list-group-item list-group-item-action">Bildirimler</a>
             </div>
         </div>
         <div class="col-md-9">

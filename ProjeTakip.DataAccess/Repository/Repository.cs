@@ -21,9 +21,19 @@ namespace ProjeTakip.DataAccess.Repository
             _dbSet = _context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
-            return _dbSet.ToList();
+            IQueryable<T> query = _dbSet;
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return query.ToList();
         }
 
         public T Get(object primaryKey)

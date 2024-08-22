@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ProjeTakip.Models.Project>
+
+<h2>Projects</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Proje</th>
+                <th>Açıklama</th>
+                <th>Ekip</th>
+                <th>Ekip Lideri</th>
+                <th>Başlangıç Tarihi</th>
+                <th>Bitiş Tarihi</th>
+                <th>Proje Durumu</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model)
+            {
+                <tr>
+                    <td>@project.ProjectName</td>
+                    <td>@project.Team.TeamName</td>
+                    <td>@project.Team.TeamLead</td>
+                    <td>@project.StartDate</td>
+                    <td>@project.EndDate</td>
+                    <td>@project.ProjectStatusId</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@project.ProjectId">Düzenle</a>
+                        <a asp-action="Delete" asp-route-id="@project.ProjectId">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No projects available.</p>
+}

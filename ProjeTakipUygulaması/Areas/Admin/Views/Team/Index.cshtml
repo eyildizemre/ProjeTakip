@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ProjeTakip.Models.Team>
+
+<h2>Teams</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Team Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>@team.TeamName</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@team.TeamId">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -132,8 +132,9 @@ namespace ProjeTakip.DataAccess.Migrations
                     ProjectId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    TeamId = table.Column<int>(type: "int", nullable: false),
-                    TeamLeadId = table.Column<int>(type: "int", nullable: false),
+                    ProjectDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TeamId = table.Column<int>(type: "int", nullable: true),
+                    TeamLeadId = table.Column<int>(type: "int", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProjectStatusId = table.Column<int>(type: "int", nullable: false),
@@ -152,14 +153,12 @@ namespace ProjeTakip.DataAccess.Migrations
                         name: "FK_Projects_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "TeamId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "TeamId");
                     table.ForeignKey(
                         name: "FK_Projects_Users_TeamLeadId",
                         column: x => x.TeamLeadId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -286,7 +285,7 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$rkfTPESKX5gDk8hZ7XFo9eL0vHIj7zJ5ce4Jz/pATixKVW5N6I5vm", "User", "$2a$11$rkfTPESKX5gDk8hZ7XFo9e" });
+                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$sQJp7ojScitUskzU.1jj7.c6el49SHnJgA.GnytcHy.xLt1XRHEj.", "User", "$2a$11$sQJp7ojScitUskzU.1jj7." });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
