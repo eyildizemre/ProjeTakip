@@ -114,7 +114,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         {
             var model = new ProjectVM
             {
-                Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                Teams = _unitOfWork.Teams.GetAll(t => t.Enabled).Select(t => new SelectListItem
                 {
                     Text = t.TeamName,
                     Value = t.TeamId.ToString()
@@ -132,7 +132,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var selectedTeam = _unitOfWork.Teams.GetFirstOrDefault(t => t.TeamId == model.TeamId);
+                    var selectedTeam = _unitOfWork.Teams.GetFirstOrDefault(t => t.TeamId == model.TeamId && t.Enabled);
                     if (selectedTeam == null)
                     {
                         ModelState.AddModelError("", "Seçilen takım bulunamadı.");
@@ -157,7 +157,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                model.Teams = _unitOfWork.Teams.GetAll(t => t.Enabled).Select(t => new SelectListItem
                 {
                     Text = t.TeamName,
                     Value = t.TeamId.ToString()
@@ -197,7 +197,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     TeamLeadId = project.TeamLeadId,
                     StartDate = project.StartDate,
                     EndDate = project.EndDate,
-                    Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                    Teams = _unitOfWork.Teams.GetAll(t => t.Enabled).Select(t => new SelectListItem
                     {
                         Text = t.TeamName,
                         Value = t.TeamId.ToString(),
@@ -247,7 +247,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                model.Teams = _unitOfWork.Teams.GetAll(t => t.Enabled).Select(t => new SelectListItem
                 {
                     Text = t.TeamName,
                     Value = t.TeamId.ToString(),

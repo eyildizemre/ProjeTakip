@@ -17,7 +17,7 @@
 
     <div class="form-group">
         <label asp-for="TeamId"></label>
-        <select asp-for="TeamId" class="form-control" asp-items="Model.Teams">
+        <select id="teamSelect" asp-for="TeamId" class="form-control" asp-items="Model.Teams">
             <option value="">Bir Ekip Seçin</option>
         </select>
         <span asp-validation-for="TeamId" class="text-danger"></span>
@@ -41,26 +41,29 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Bugünün tarihi
-            var today = new Date().toISOString().split('T')[0];
-            // İki gün sonrası
-            var twoDaysLater = new Date();
-            twoDaysLater.setDate(twoDaysLater.getDate() + 2);
-            var endDate = twoDaysLater.toISOString().split('T')[0];
+            var startDateInput = document.getElementById('startDate');
+            var endDateInput = document.getElementById('endDate');
 
-            // Tarihleri input alanlarına ata
-            document.getElementById('startDate').value = today;
-            document.getElementById('endDate').value = endDate;
+            // Eğer startDate ve endDate boşsa varsayılan tarihleri belirle
+            if (!startDateInput.value) {
+                var today = new Date().toISOString().split('T')[0];
+                startDateInput.value = today;
+            }
+
+            if (!endDateInput.value) {
+                var twoDaysLater = new Date();
+                twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+                endDateInput.value = twoDaysLater.toISOString().split('T')[0];
+            }
 
             // Başlangıç tarihi değiştiğinde bitiş tarihini güncelle
-            document.getElementById('startDate').addEventListener('change', function () {
+            startDateInput.addEventListener('change', function () {
                 var startDate = new Date(this.value);
                 var minEndDate = new Date(startDate);
                 minEndDate.setDate(minEndDate.getDate() + 2);
                 var minEndDateStr = minEndDate.toISOString().split('T')[0];
 
                 // EndDate inputunun minimum değerini güncelle
-                var endDateInput = document.getElementById('endDate');
                 endDateInput.setAttribute('min', minEndDateStr);
 
                 // EndDate'in geçerli değeri minimum tarihten küçükse güncelle
@@ -70,11 +73,20 @@
             });
 
             // Sayfa yüklendiğinde, EndDate'in minimum değeri StartDate'ten iki gün sonrası olmalı
-            var startDate = new Date(document.getElementById('startDate').value);
+            var startDate = new Date(startDateInput.value);
             var minEndDate = new Date(startDate);
             minEndDate.setDate(minEndDate.getDate() + 2);
             var minEndDateStr = minEndDate.toISOString().split('T')[0];
-            document.getElementById('endDate').setAttribute('min', minEndDateStr);
+            endDateInput.setAttribute('min', minEndDateStr);
+        });
+
+        // Toastr ve SweetAlert2 kütüphanelerini ekleyene kadar bununla idare edeceğiz
+        document.querySelector('form').addEventListener('submit', function (e) {
+            var teamSelect = document.getElementById('teamSelect'); // Team dropdown'ının ID'si
+            if (teamSelect.value === "") {
+                e.preventDefault(); // Formun submit edilmesini engelle
+                alert("Lütfen bir ekip seçin.");
+            }
         });
     </script>
 }
