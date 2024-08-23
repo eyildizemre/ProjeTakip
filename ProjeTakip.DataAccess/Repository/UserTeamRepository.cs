@@ -21,7 +21,7 @@ namespace ProjeTakip.DataAccess.Repository
 
 		public void Update(UserTeam userTeam)
 		{
-			var objFromDb = _context.UsersTeams.FirstOrDefault(ut => ut.No == userTeam.No);
+			var objFromDb = _context.UserTeams.FirstOrDefault(ut => ut.No == userTeam.No);
 			if (objFromDb != null)
 			{
 				objFromDb.UserId = userTeam.UserId;

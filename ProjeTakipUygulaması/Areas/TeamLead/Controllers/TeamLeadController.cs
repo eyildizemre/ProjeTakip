@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ProjeTakip.DataAccess.Repository.IRepository;
 using ProjeTakip.Models;
 using ProjeTakip.Models.ViewModels;
+using System.Threading.Tasks;
 
 namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 {

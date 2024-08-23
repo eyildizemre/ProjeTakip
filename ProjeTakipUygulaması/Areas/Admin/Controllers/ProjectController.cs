@@ -112,22 +112,14 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var model = new ProjectVM();
-
-            var users = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled)).AsQueryable()
-                          .Include(u => u.UserRoles);
-
-            model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+            var model = new ProjectVM
             {
-                Text = t.TeamName,
-                Value = t.TeamId.ToString()
-            }).ToList();
-
-            model.TeamLeads = users.Select(u => new SelectListItem
-            {
-                Text = u.UserFName + " " + u.UserLName,
-                Value = u.UserId.ToString()
-            }).ToList();
+                Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                {
+                    Text = t.TeamName,
+                    Value = t.TeamId.ToString()
+                }).ToList()
+            };
 
             return View(model);
         }
@@ -140,12 +132,19 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    var selectedTeam = _unitOfWork.Teams.GetFirstOrDefault(t => t.TeamId == model.TeamId);
+                    if (selectedTeam == null)
+                    {
+                        ModelState.AddModelError("", "Seçilen takım bulunamadı.");
+                        return View(model);
+                    }
+
                     var project = new Project
                     {
                         ProjectName = model.ProjectName,
                         ProjectDescription = model.ProjectDescription,
                         TeamId = model.TeamId,
-                        TeamLeadId = model.TeamLeadId,
+                        TeamLeadId = selectedTeam.TeamLeadId, // Takım lideri otomatik atanıyor
                         StartDate = model.StartDate,
                         EndDate = model.EndDate,
                         ProjectStatusId = 1, // "Not Started" olarak başlatıyoruz
@@ -158,19 +157,11 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Ekranı yeniden doldurmak için
                 model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
                 {
                     Text = t.TeamName,
                     Value = t.TeamId.ToString()
                 }).ToList();
-
-                model.TeamLeads = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled))
-                    .Select(u => new SelectListItem
-                    {
-                        Text = u.UserFName + " " + u.UserLName,
-                        Value = u.UserId.ToString()
-                    }).ToList();
 
                 return View(model);
             }

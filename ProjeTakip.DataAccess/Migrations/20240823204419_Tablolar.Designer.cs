@@ -12,7 +12,7 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240823112910_Tablolar")]
+    [Migration("20240823204419_Tablolar")]
     partial class Tablolar
     {
         /// <inheritdoc />
@@ -311,7 +311,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("TeamLeadId")
@@ -329,6 +329,15 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("TeamLeadId");
 
                     b.ToTable("Teams");
+
+                    b.HasData(
+                        new
+                        {
+                            TeamId = 2,
+                            Enabled = true,
+                            TeamLeadId = 2,
+                            TeamName = ".NET Core MVC"
+                        });
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.User", b =>
@@ -381,9 +390,20 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$QV5jAZpCNczR6CUHsKcmB.9fr44U8ASQVr.Lin4KsxBmO4JdsX/Q.",
+                            UserHash = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.R0rn9PYG3WNk71mUKT5luGzyanFd8dC",
                             UserLName = "User",
-                            UserSalt = "$2a$11$QV5jAZpCNczR6CUHsKcmB."
+                            UserSalt = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6."
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Enabled = true,
+                            GitHubProfile = "https://github.com/alperen",
+                            UserEmail = "alperen@gmail.com",
+                            UserFName = "Alperen",
+                            UserHash = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.Ty2e/G7OER/SJ6ol0iDo1lQ4OySwMhi",
+                            UserLName = "Ekici",
+                            UserSalt = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6."
                         });
                 });
 
@@ -419,6 +439,13 @@ namespace ProjeTakip.DataAccess.Migrations
                             Enabled = true,
                             RoleId = 1,
                             UserId = 1
+                        },
+                        new
+                        {
+                            UserRoleId = 2,
+                            Enabled = true,
+                            RoleId = 2,
+                            UserId = 2
                         });
                 });
 
@@ -454,7 +481,7 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersTeams");
+                    b.ToTable("UserTeams");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Comment", b =>
@@ -556,7 +583,7 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
-                    b.HasOne("ProjeTakip.Models.Status", "ProjectStatus")
+                    b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -572,7 +599,7 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("ProjectStatus");
+                    b.Navigation("Status");
 
                     b.Navigation("Team");
 
@@ -584,8 +611,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasOne("ProjeTakip.Models.Project", "Project")
                         .WithMany("Teams")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ProjeTakip.Models.User", "TeamLead")
                         .WithMany()

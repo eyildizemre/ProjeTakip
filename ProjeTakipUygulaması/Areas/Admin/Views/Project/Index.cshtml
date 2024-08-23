@@ -32,12 +32,12 @@
                     </td>
                     <td>@project.TeamName</td>
                     <td>@project.TeamLeadName</td>
-                    <td>@project.StartDate.ToString("dd.MM.yyyy")</td>
-                    <td>@project.EndDate.ToString("dd.MM.yyyy")</td>
+                    <td>@project.StartDate.ToShortDateString()</td>
+                    <td>@project.EndDate.ToShortDateString()</td>
                     <td>@project.ProjectStatusName</td>
                     <td>
-                        <a class="btn btn-primary" href="@Url.Action("Edit", new { id = project.ProjectId })">Düzenle</a> |
-                        <a class="btn btn-danger" href="@Url.Action("Delete", new { id = project.ProjectId })">Sil</a>
+                        <a asp-action="Edit" asp-route-id="@project.ProjectId">Düzenle</a> |
+                        <a asp-action="Delete" asp-route-id="@project.ProjectId">Sil</a>
                     </td>
                 </tr>
             }

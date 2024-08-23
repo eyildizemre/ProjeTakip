@@ -245,7 +245,7 @@ namespace ProjeTakip.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TeamName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     TeamLeadId = table.Column<int>(type: "int", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: true),
                     Capacity = table.Column<int>(type: "int", nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -267,7 +267,7 @@ namespace ProjeTakip.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersTeams",
+                name: "UserTeams",
                 columns: table => new
                 {
                     No = table.Column<int>(type: "int", nullable: false)
@@ -280,21 +280,21 @@ namespace ProjeTakip.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersTeams", x => x.No);
+                    table.PrimaryKey("PK_UserTeams", x => x.No);
                     table.ForeignKey(
-                        name: "FK_UsersTeams_Roles_RoleId",
+                        name: "FK_UserTeams_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "RoleId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UsersTeams_Teams_TeamId",
+                        name: "FK_UserTeams_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "TeamId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersTeams_Users_UserId",
+                        name: "FK_UserTeams_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -325,12 +325,25 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$QV5jAZpCNczR6CUHsKcmB.9fr44U8ASQVr.Lin4KsxBmO4JdsX/Q.", "User", "$2a$11$QV5jAZpCNczR6CUHsKcmB." });
+                values: new object[,]
+                {
+                    { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.R0rn9PYG3WNk71mUKT5luGzyanFd8dC", "User", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6." },
+                    { 2, true, "https://github.com/alperen", "alperen@gmail.com", "Alperen", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.Ty2e/G7OER/SJ6ol0iDo1lQ4OySwMhi", "Ekici", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6." }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Teams",
+                columns: new[] { "TeamId", "Capacity", "Enabled", "ProjectId", "TeamLeadId", "TeamName" },
+                values: new object[] { 2, null, true, null, 2, ".NET Core MVC" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
                 columns: new[] { "UserRoleId", "Enabled", "RoleId", "UserId" },
-                values: new object[] { 1, true, 1, 1 });
+                values: new object[,]
+                {
+                    { 1, true, 1, 1 },
+                    { 2, true, 2, 2 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ProjectId",
@@ -430,18 +443,18 @@ namespace ProjeTakip.DataAccess.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersTeams_RoleId",
-                table: "UsersTeams",
+                name: "IX_UserTeams_RoleId",
+                table: "UserTeams",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersTeams_TeamId",
-                table: "UsersTeams",
+                name: "IX_UserTeams_TeamId",
+                table: "UserTeams",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersTeams_UserId",
-                table: "UsersTeams",
+                name: "IX_UserTeams_UserId",
+                table: "UserTeams",
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
@@ -495,7 +508,7 @@ namespace ProjeTakip.DataAccess.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "UsersTeams");
+                name: "UserTeams");
 
             migrationBuilder.DropTable(
                 name: "Roles");

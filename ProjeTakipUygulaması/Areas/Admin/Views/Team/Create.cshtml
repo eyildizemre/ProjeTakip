@@ -1,12 +1,97 @@
-﻿@model ProjeTakip.Models.Team
+﻿@model ProjeTakip.Models.ViewModels.TeamVM
 
-<h2>Create Team</h2>
+@{
+    ViewData["Title"] = "Create Team";
+}
 
-<form asp-action="Create">
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="TeamName"></label>
-        <input asp-for="TeamName" class="form-control" />
-        <span asp-validation-for="TeamName" class="text-danger"></span>
+        <label asp-for="Team.TeamName" class="control-label"></label>
+        <input asp-for="Team.TeamName" class="form-control" />
+        <span asp-validation-for="Team.TeamName" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Create</button>
+
+    <div class="form-group">
+        <label asp-for="Team.TeamLeadId" class="control-label">Team Lead</label>
+        <select asp-for="Team.TeamLeadId" class="form-control" asp-items="Model.TeamLeads" id="teamLeadSelect">
+            <option value="">Select a Team Lead</option>
+        </select>
+        <span asp-validation-for="Team.TeamLeadId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Select Team Members</label>
+        <div id="teamMembersContainer">
+            @foreach (var user in Model.Users)
+            {
+                <div class="user-item" data-userid="@user.Value" data-teamlead="@Model.Team.TeamLeadId">
+                    <span>@user.Text</span>
+                    <button type="button" class="btn btn-success btn-sm add-member-btn">+</button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
 </form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+        // TeamLead seçildiğinde TeamLead ID'sini al
+        $('#teamLeadSelect').on('change', function () {
+            var selectedTeamLeadId = $(this).val();
+
+            // Eğer bir TeamLead seçildiyse üyeleri seçime aç
+            if (selectedTeamLeadId) {
+                $('.user-item').each(function () {
+                    var userId = $(this).data('userid');
+
+                    // Eğer kullanıcı TeamLead değilse aktif et
+                    if (userId != selectedTeamLeadId) {
+                        $(this).find('.add-member-btn').prop('disabled', false);
+                    } else {
+                        $(this).find('.add-member-btn').prop('disabled', true);
+                    }
+                });
+            } else {
+                // TeamLead seçilmediği takdirde tüm üyeler kilitli kalır
+                $('.add-member-btn').prop('disabled', true);
+            }
+        });
+
+        // Ekip üyesi ekleme/çıkarma işlemi
+        $('.add-member-btn').on('click', function () {
+            var userId = $(this).closest('.user-item').data('userid');
+            var $button = $(this);
+
+            // Eğer buton disabled değilse işlem yap
+            if (!$button.prop('disabled')) {
+                // Kullanıcıyı ekle veya çıkar
+                if ($button.hasClass('btn-success')) {
+                    // Kullanıcıyı ekle
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'SelectedUserIds',
+                        value: userId
+                    }).appendTo('form');
+                
+                    $button.removeClass('btn-success').addClass('btn-danger').text('-');
+                } else {
+                    // Kullanıcıyı çıkar
+                    $('input[name="SelectedUserIds"][value="' + userId + '"]').remove();
+                
+                    $button.removeClass('btn-danger').addClass('btn-success').text('+');
+                }
+            }
+        });
+
+        // Sayfa yüklendiğinde butonları devre dışı bırak
+        $('.add-member-btn').prop('disabled', true);
+        });
+    </script>
+}

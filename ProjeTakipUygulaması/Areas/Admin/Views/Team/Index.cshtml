@@ -5,17 +5,29 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Team Name</th>
-            <th>Actions</th>
+            <th>Ekip</th>
+            <th>Ekip Yöneticisi</th>
+            <th>İşlemler</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var team in Model)
         {
             <tr>
-                <td>@team.TeamName</td>
+                <td><a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@team.TeamId">@team.TeamName</a></td>
+                <td>@team.TeamLead?.UserFName @team.TeamLead?.UserLName</td>
+                @* <td>
+                    @foreach (var userTeam in team.UserTeams)
+                    {
+                        if (userTeam.Enabled && userTeam.User != null && userTeam.Role != null)
+                        {
+                            <div>@userTeam.User.UserFName @userTeam.User.UserLName (@userTeam.Role.RoleName)</div>
+                        }
+                    }
+                </td> *@
                 <td>
-                    <a asp-action="Edit" asp-route-id="@team.TeamId">Edit</a>
+                    <a asp-action="Edit" asp-route-id="@team.TeamId" class="btn btn-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@team.TeamId" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
         }

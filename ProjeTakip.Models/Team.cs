@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,11 +19,17 @@ namespace ProjeTakip.Models
         public string TeamName { get; set; }
 
         [ForeignKey("UserId")]
+        [ValidateNever]  // Validation sırasında göz ardı edilir
         public int TeamLeadId { get; set; }
+
+        [ValidateNever]  // Validation sırasında göz ardı edilir
         public User TeamLead { get; set; } // TeamLead ile ilişkiyi tanımlayan navigasyon property
 
         [ForeignKey("ProjectId")]
-        public int ProjectId { get; set; }
+        [ValidateNever]  // Validation sırasında göz ardı edilir
+        public int? ProjectId { get; set; }
+
+        [ValidateNever]  // Validation sırasında göz ardı edilir
         public Project Project { get; set; } // Project ile ilişkiyi tanımlayan navigasyon property
 
         public int? Capacity { get; set; } // Ekip kapasitesi (TeamLead dâhil)
@@ -30,7 +37,10 @@ namespace ProjeTakip.Models
         public bool Enabled { get; set; }
 
         // Navigasyon özellikleri
+        [ValidateNever]  // Validation sırasında göz ardı edilir
         public ICollection<Project> Projects { get; set; }
+
+        [ValidateNever]  // Validation sırasında göz ardı edilir
         public ICollection<UserTeam> UserTeams { get; set; } // Ekip ve kullanıcılar arasındaki ilişki
     }
 }

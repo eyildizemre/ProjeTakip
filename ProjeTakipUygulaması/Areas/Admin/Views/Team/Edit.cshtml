@@ -1,13 +1,81 @@
-﻿@model ProjeTakip.Models.Team
+﻿@model ProjeTakip.Models.ViewModels.TeamVM
 
-<h2>Edit Team</h2>
+@{
+    ViewData["Title"] = "Edit Team";
+}
 
-<form asp-action="Edit">
-    <input type="hidden" asp-for="TeamId" />
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Team.TeamId" />
+
     <div class="form-group">
-        <label asp-for="TeamName"></label>
-        <input asp-for="TeamName" class="form-control" />
-        <span asp-validation-for="TeamName" class="text-danger"></span>
+        <label asp-for="Team.TeamName" class="control-label"></label>
+        <input asp-for="Team.TeamName" class="form-control" />
+        <span asp-validation-for="Team.TeamName" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+
+    <div class="form-group">
+        <label asp-for="Team.TeamLeadId" class="control-label">Team Lead</label>
+        <select asp-for="Team.TeamLeadId" class="form-control" asp-items="Model.TeamLeads" id="teamLeadSelect">
+            <option value="">Select a Team Lead</option>
+        </select>
+        <span asp-validation-for="Team.TeamLeadId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Select Team Members</label>
+        <div id="teamMembersContainer">
+            @if (Model.Users != null && Model.Users.Any())
+            {
+                foreach (var user in Model.Users)
+                {
+                    <div class="user-item" data-userid="@user.Value" data-teamlead="@Model.Team.TeamLeadId">
+                        <span>@user.Text</span>
+                        <input type="checkbox" value="@user.Value" name="SelectedUserIds"
+                            @(Model.UserTeams.Any(ut => ut.UserId == int.Parse(user.Value)) ? "checked" : "") />
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No users found.</p>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Save Changes" class="btn btn-primary" />
+    </div>
 </form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#teamLeadSelect').on('change', function () {
+                var selectedTeamLeadId = $(this).val();
+                if (selectedTeamLeadId) {
+                    $('.user-item').each(function () {
+                        var userId = $(this).data('userid');
+                        if (userId.toString() == selectedTeamLeadId) { // int-string karşılaştırması düzeltildi
+                            $(this).find('input[type=checkbox]').prop('checked', false).prop('disabled', true);
+                        } else {
+                            $(this).find('input[type=checkbox]').prop('disabled', false);
+                        }
+                    });
+                }
+            });
+
+            // Initialize: disable checkboxes for the selected TeamLead
+            var initialTeamLeadId = $('#teamLeadSelect').val();
+            if (initialTeamLeadId) {
+                $('.user-item').each(function () {
+                    var userId = $(this).data('userid');
+                    if (userId.toString() == initialTeamLeadId) { // int-string karşılaştırması düzeltildi
+                        $(this).find('input[type=checkbox]').prop('checked', false).prop('disabled', true);
+                    }
+                });
+            }
+        });
+    </script>
+}

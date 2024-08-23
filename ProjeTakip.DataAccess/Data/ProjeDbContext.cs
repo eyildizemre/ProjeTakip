@@ -18,7 +18,7 @@ namespace ProjeTakip.DataAccess.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Team> Teams { get; set; }
-        public DbSet<UserTeam> UsersTeams { get; set; }
+        public DbSet<UserTeam> UserTeams { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Görev> Tasks { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -243,6 +243,7 @@ namespace ProjeTakip.DataAccess.Data
 
             var salt = BCrypt.Net.BCrypt.GenerateSalt();
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword("Admin123*", salt);
+            var hashedPassword2 = BCrypt.Net.BCrypt.HashPassword("Alperen.Ekici1*", salt);
 
             modelBuilder.Entity<User>().HasData(
                 new User
@@ -255,11 +256,27 @@ namespace ProjeTakip.DataAccess.Data
                     UserHash = hashedPassword,
                     GitHubProfile = "https://github.com/eyildizemre",
                     Enabled = true
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserFName = "Alperen",
+                    UserLName = "Ekici",
+                    UserEmail = "alperen@gmail.com",
+                    UserSalt = salt,
+                    UserHash = hashedPassword2,
+                    GitHubProfile = "https://github.com/alperen",
+                    Enabled = true
                 }
             );
 
+            modelBuilder.Entity<Team>().HasData(
+                new Team { TeamId = 2, TeamName = ".NET Core MVC", TeamLeadId = 2, Enabled = true }
+            );
+
             modelBuilder.Entity<UserRole>().HasData(
-                new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true });
+                new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true },
+                new UserRole { UserRoleId = 2, UserId = 2, RoleId = 2, Enabled = true });
         }
     }
 }

@@ -32,5 +32,4 @@ namespace ProjeTakip.Models
 		public Team Team { get; set; }
 		public Role Role { get; set; }
 	}
-
 }

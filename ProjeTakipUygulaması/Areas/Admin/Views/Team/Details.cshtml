@@ -1,0 +1,35 @@
+﻿@model ProjeTakip.Models.Team
+
+@{
+    ViewData["Title"] = "Team Details";
+}
+
+<h2>@Model.TeamName</h2>
+
+<div>
+    <h4>Team Information</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Team Name</dt>
+        <dd>@Model.TeamName</dd>
+
+        <dt>Team Lead</dt>
+        <dd>@Model.TeamLead?.UserFName @Model.TeamLead?.UserLName</dd>
+
+        <dt>Capacity</dt>
+        <dd>@Model.Capacity</dd>
+
+        <dt>Team Members</dt>
+        <dd>
+            @foreach (var userTeam in Model.UserTeams)
+            {
+                if (userTeam.Enabled && userTeam.User != null && userTeam.Role != null)
+                {
+                    <div>@userTeam.User.UserFName @userTeam.User.UserLName (@userTeam.Role.RoleName)</div>
+                }
+            }
+        </dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-primary">Back to Teams</a>
