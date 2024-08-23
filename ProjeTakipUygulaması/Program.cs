@@ -29,7 +29,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -41,12 +40,14 @@ app.UseRouting();
 // Enable session management
 app.UseSession();
 
+// Authorization iþlemleri session'dan sonra kullanýlmalý.
+app.UseAuthorization();
+
 // Middleware to check if the user is logged in
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value.ToLower();
 
-    // POST isteklerini atla
     if (!path.Contains("/account/login") &&
         string.IsNullOrEmpty(context.Session.GetString("UserId")) &&
         context.Request.Method.ToLower() != "post")
@@ -54,10 +55,28 @@ app.Use(async (context, next) =>
         context.Response.Redirect("/Account/Login");
         return;
     }
+    else if (path.Contains("/account/login") &&
+             !string.IsNullOrEmpty(context.Session.GetString("UserId")) &&
+             context.Request.Method.ToLower() == "post")
+    {
+        var roleId = context.Session.GetInt32("RoleId");
+
+        if (roleId == 1)
+        {
+            context.Response.Redirect("/Admin/");
+        }
+        else if (roleId == 2)
+        {
+            context.Response.Redirect("/TeamLead/");
+        }
+        else if (roleId == 3)
+        {
+            context.Response.Redirect("/TeamMember/");
+        }
+        return;
+    }
     await next.Invoke();
 });
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",

@@ -34,8 +34,9 @@ namespace ProjeTakipUygulaması.Controllers
                 if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.UserHash))
                 {
                     HttpContext.Session.SetString("UserId", user.UserId.ToString());
+                    HttpContext.Session.SetString("UserFName", user.UserFName); // FirstName ekliyoruz
 
-                    var userRole = user.UserRoles?.FirstOrDefault(); // userRole null olup olmadığını kontrol et
+                    var userRole = user.UserRoles?.FirstOrDefault();
 
                     if (userRole != null)
                     {
