@@ -34,12 +34,16 @@ namespace ProjeTakip.Models
 
         public bool Enabled { get; set; }
 
-		// Navigasyon Özellikleri
-		public Team Team { get; set; }
+        // Navigasyon Özellikleri
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
+		public User TeamLead { get; set; }
+		[ForeignKey("ProjectStatusId")]
 		public Status Status { get; set; }
-		public User TeamLead { get; set; } // TeamLead alanını User türünde tanımlıyoruz
+		 // TeamLead alanını User türünde tanımlıyoruz
 
         public ICollection<Team> Teams { get; set; } // Proje ile ilişkili takımlar
         public ICollection<Comment> Comments { get; set; } // Proje ile ilişkili yorumlar
+        public ICollection<Görev> Tasks { get; set; } // Proje ile ilişkili görevler
     }
 }

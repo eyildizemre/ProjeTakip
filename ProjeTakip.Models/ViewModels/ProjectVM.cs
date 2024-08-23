@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ProjeTakip.Models.ViewModels
@@ -21,8 +22,14 @@ namespace ProjeTakip.Models.ViewModels
         [Display(Name = "Ekip")]
         public int? TeamId { get; set; }
 
+        [ValidateNever]
+        public string TeamName { get; set; } // TeamName eklendi
+
         [Display(Name = "Ekip Lideri")]
         public int? TeamLeadId { get; set; }
+
+        [ValidateNever]
+        public string TeamLeadName { get; set; } // TeamLeadName eklendi
 
         [Required]
         [Display(Name = "Başlangıç Tarihi")]
@@ -34,14 +41,35 @@ namespace ProjeTakip.Models.ViewModels
 
         public int? ProjectStatusId { get; set; }
 
+        [ValidateNever]
+        public string ProjectStatusName { get; set; } // Proje durumunun ismi
+
         public bool Enabled { get; set; }
 
-        // Durumun ismi, UI'da göstermek için kullanılabilir
-        public string ProjectStatusName { get; set; }
+        [ValidateNever]
+        public string Comment { get; set; } // Admin'in gireceği yorum
+
+        [ValidateNever]
+        public bool IsApproved { get; set; } // Proje onay durumu
+
+        // Yeni eklenen özellikler
+        [ValidateNever]
+        public int TeamCapacity { get; set; } // Ekip kapasitesi
+
+        [ValidateNever]
+        public int TotalTasks { get; set; } // Toplam görev sayısı
+
+        [ValidateNever]
+        public int SuccessfulTasks { get; set; } // Başarılı görev sayısı
+
+        [ValidateNever]
+        public int FailedTasks { get; set; } // Başarısız görev sayısı
 
         // Dropdowns için gerekli listeler
+        [ValidateNever]
         public IEnumerable<SelectListItem> Teams { get; set; }
+
+        [ValidateNever]
         public IEnumerable<SelectListItem> TeamLeads { get; set; }
     }
-
 }

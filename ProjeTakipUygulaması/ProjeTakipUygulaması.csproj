@@ -27,8 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\TeamLead\Controllers\" />
-    <Folder Include="Areas\TeamLead\Views\" />
     <Folder Include="Areas\TeamMember\Controllers\" />
     <Folder Include="Areas\TeamMember\Views\" />
   </ItemGroup>

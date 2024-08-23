@@ -11,5 +11,4 @@ namespace ProjeTakip.DataAccess.Repository.IRepository
 	{
 		void Update(UserRole userrole);
 	}
-
 }

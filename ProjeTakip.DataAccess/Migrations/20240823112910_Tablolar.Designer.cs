@@ -12,7 +12,7 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240822210254_Tablolar")]
+    [Migration("20240823112910_Tablolar")]
     partial class Tablolar
     {
         /// <inheritdoc />
@@ -92,6 +92,9 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -117,6 +120,8 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("AssignedUserUserId");
 
                     b.HasIndex("CommentId");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("TaskCommentId")
                         .IsUnique()
@@ -376,9 +381,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$.yZcuNr9syy3D4nw/VIVw.p7GHm6p/g4fAOxkZsrAnHqiw3PlbtyC",
+                            UserHash = "$2a$11$QV5jAZpCNczR6CUHsKcmB.9fr44U8ASQVr.Lin4KsxBmO4JdsX/Q.",
                             UserLName = "User",
-                            UserSalt = "$2a$11$.yZcuNr9syy3D4nw/VIVw."
+                            UserSalt = "$2a$11$QV5jAZpCNczR6CUHsKcmB."
                         });
                 });
 
@@ -499,6 +504,12 @@ namespace ProjeTakip.DataAccess.Migrations
                         .WithMany("Tasks")
                         .HasForeignKey("CommentId");
 
+                    b.HasOne("ProjeTakip.Models.Project", "Project")
+                        .WithMany("Tasks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ProjeTakip.Models.Comment", "Comment")
                         .WithOne()
                         .HasForeignKey("ProjeTakip.Models.Görev", "TaskCommentId")
@@ -518,6 +529,8 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Navigation("AssignedUser");
 
                     b.Navigation("Comment");
+
+                    b.Navigation("Project");
 
                     b.Navigation("Status");
 
@@ -543,7 +556,7 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
-                    b.HasOne("ProjeTakip.Models.Status", "Status")
+                    b.HasOne("ProjeTakip.Models.Status", "ProjectStatus")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -559,7 +572,7 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Status");
+                    b.Navigation("ProjectStatus");
 
                     b.Navigation("Team");
 
@@ -644,6 +657,8 @@ namespace ProjeTakip.DataAccess.Migrations
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Tasks");
 
                     b.Navigation("Teams");
                 });

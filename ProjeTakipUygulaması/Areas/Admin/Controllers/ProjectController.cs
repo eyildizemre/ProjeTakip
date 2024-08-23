@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProjeTakip.DataAccess.Data;
 using ProjeTakip.DataAccess.Repository.IRepository;
 using ProjeTakip.Models;
 using ProjeTakip.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Diagnostics;
 
 namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 {
@@ -10,30 +14,121 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
     public class ProjectController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ProjeDbContext _context;
 
-        public ProjectController(IUnitOfWork unitOfWork)
+        public ProjectController(IUnitOfWork unitOfWork, ProjeDbContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var projects = _unitOfWork.Projects.GetAll(includeProperties: "Team");
-            return View(projects);
+            var projects = _context.Projects
+                .Where(p => p.Enabled)
+                .Include(p => p.Team)
+                .Include(p => p.TeamLead)
+                .Include(p => p.Status)
+                .ToList();
+
+            // Test amaçlı basit bir kontrol
+            foreach (var project in projects)
+            {
+                if (project.TeamLead == null)
+                {
+                    Console.WriteLine($"Project ID {project.ProjectId} has no TeamLead assigned.");
+                }
+                else
+                {
+                    Console.WriteLine($"Project ID {project.ProjectId} has TeamLead: {project.TeamLead.UserFName} {project.TeamLead.UserLName}");
+                }
+            }
+
+            var projectVMs = projects.Select(p => new ProjectVM
+            {
+                ProjectId = p.ProjectId,
+                ProjectName = p.ProjectName,
+                ProjectDescription = p.ProjectDescription,
+                TeamId = p.TeamId,
+                TeamName = p.Team?.TeamName ?? "Atanmamış",
+                TeamLeadId = p.TeamLeadId,
+                TeamLeadName = p.TeamLead != null ? $"{p.TeamLead.UserFName} {p.TeamLead.UserLName}" : "Atanmamış",
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                ProjectStatusId = p.ProjectStatusId,
+                ProjectStatusName = p.Status?.StatusName ?? "Bilinmiyor",
+                Enabled = p.Enabled
+            }).ToList();
+
+            foreach (var project in projectVMs)
+            {
+                Debug.WriteLine($"Project ID: {project.ProjectId}, TeamLeadName: {project.TeamLeadName}");
+            }
+
+
+            return View(projectVMs);
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            var project = _unitOfWork.Projects.GetAll()
+                              .AsQueryable()
+                              .Include(p => p.Team)
+                              .Include(p => p.TeamLead)
+                              .Include(p => p.Status)
+                              .Include(p => p.Tasks)
+                              .FirstOrDefault(p => p.ProjectId == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var teamCapacity = project.TeamId != null
+                ? _unitOfWork.UserTeams.GetAll(ut => ut.TeamId == project.TeamId).Count()
+                : 0;
+
+            var model = new ProjectDetailsVM
+            {
+                ProjectId = project.ProjectId,
+                ProjectName = project.ProjectName,
+                ProjectDescription = project.ProjectDescription,
+                TeamName = project.Team?.TeamName ?? "Bilgi yok",
+                TeamLeadName = (project.TeamLead != null ? $"{project.TeamLead.UserFName} {project.TeamLead.UserLName}" : "Bilgi yok"),
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatusName = project.Status?.StatusName ?? "Bilgi yok",
+                TeamCapacity = teamCapacity,
+                TotalTasks = project.Tasks?.Count ?? 0,
+                SuccessfulTasks = project.Tasks?.Count(t => t.TaskStatusId == 3) ?? 0,
+                FailedTasks = project.Tasks?.Count(t => t.TaskStatusId == 4) ?? 0
+            };
+
+            return View(model);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            var model = new ProjectVM
+            var model = new ProjectVM();
+
+            var users = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled)).AsQueryable()
+                          .Include(u => u.UserRoles);
+
+            model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
             {
-                Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
-                {
-                    Text = t.TeamName,
-                    Value = t.TeamId.ToString()
-                })
-            };
+                Text = t.TeamName,
+                Value = t.TeamId.ToString()
+            }).ToList();
+
+            model.TeamLeads = users.Select(u => new SelectListItem
+            {
+                Text = u.UserFName + " " + u.UserLName,
+                Value = u.UserId.ToString()
+            }).ToList();
+
             return View(model);
         }
 
@@ -41,95 +136,148 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectVM model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var project = new Project
+                if (ModelState.IsValid)
                 {
-                    ProjectName = model.ProjectName,
-                    ProjectDescription = model.ProjectDescription,
-                    TeamId = model.TeamId,
-                    TeamLeadId = model.TeamLeadId,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    ProjectStatusId = 1, // Proje oluşturulurken varsayılan olarak "Not Started" durumu
-                    Enabled = true
-                };
+                    var project = new Project
+                    {
+                        ProjectName = model.ProjectName,
+                        ProjectDescription = model.ProjectDescription,
+                        TeamId = model.TeamId,
+                        TeamLeadId = model.TeamLeadId,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
+                        ProjectStatusId = 1, // "Not Started" olarak başlatıyoruz
+                        Enabled = true
+                    };
 
-                _unitOfWork.Projects.Add(project);
-                await _unitOfWork.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    _unitOfWork.Projects.Add(project);
+                    await _unitOfWork.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Ekranı yeniden doldurmak için
+                model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                {
+                    Text = t.TeamName,
+                    Value = t.TeamId.ToString()
+                }).ToList();
+
+                model.TeamLeads = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled))
+                    .Select(u => new SelectListItem
+                    {
+                        Text = u.UserFName + " " + u.UserLName,
+                        Value = u.UserId.ToString()
+                    }).ToList();
+
+                return View(model);
             }
-
-            model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+            catch (Exception ex)
             {
-                Text = t.TeamName,
-                Value = t.TeamId.ToString()
-            });
-
-            return View(model);
+                ModelState.AddModelError("", $"Bir hata oluştu: {ex.Message}");
+                return View(model);
+            }
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id, includeProperties: "Team");
-            if (project == null)
+            try
             {
-                return NotFound();
-            }
+                var project = _unitOfWork.Projects.GetAll().AsQueryable()
+                                 .Include(p => p.Team)
+                                 .Include(p => p.TeamLead)
+                                 .Include(p => p.Status)
+                                 .FirstOrDefault(p => p.ProjectId == id);
 
-            var model = new ProjectVM
-            {
-                ProjectId = project.ProjectId,
-                ProjectName = project.ProjectName,
-                ProjectDescription = project.ProjectDescription,
-                TeamId = project.TeamId,
-                TeamLeadId = project.TeamLeadId,
-                StartDate = project.StartDate,
-                EndDate = project.EndDate,
-                Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                if (project == null)
                 {
-                    Text = t.TeamName,
-                    Value = t.TeamId.ToString(),
-                    Selected = (project.TeamId == t.TeamId)
-                })
-            };
+                    return NotFound();
+                }
 
-            return View(model);
+                var model = new ProjectVM
+                {
+                    ProjectId = project.ProjectId,
+                    ProjectName = project.ProjectName,
+                    ProjectDescription = project.ProjectDescription,
+                    TeamId = project.TeamId,
+                    TeamLeadId = project.TeamLeadId,
+                    StartDate = project.StartDate,
+                    EndDate = project.EndDate,
+                    Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                    {
+                        Text = t.TeamName,
+                        Value = t.TeamId.ToString(),
+                        Selected = (project.TeamId == t.TeamId)
+                    }).ToList(),
+                    TeamLeads = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled))
+                                .Select(u => new SelectListItem
+                                {
+                                    Text = u.UserFName + " " + u.UserLName,
+                                    Value = u.UserId.ToString(),
+                                    Selected = (project.TeamLeadId == u.UserId)
+                                }).ToList()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Bir hata oluştu: " + ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProjectVM model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == model.ProjectId);
-                if (project == null)
+                if (ModelState.IsValid)
                 {
-                    return NotFound();
+                    var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == model.ProjectId);
+                    if (project == null)
+                    {
+                        return NotFound();
+                    }
+
+                    project.ProjectName = model.ProjectName;
+                    project.ProjectDescription = model.ProjectDescription;
+                    project.TeamId = model.TeamId;
+                    project.TeamLeadId = model.TeamLeadId;
+                    project.StartDate = model.StartDate;
+                    project.EndDate = model.EndDate;
+
+                    _unitOfWork.Projects.Update(project);
+                    await _unitOfWork.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
 
-                project.ProjectName = model.ProjectName;
-                project.ProjectDescription = model.ProjectDescription;
-                project.TeamId = model.TeamId;
-                project.TeamLeadId = model.TeamLeadId;
-                project.StartDate = model.StartDate;
-                project.EndDate = model.EndDate;
+                model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+                {
+                    Text = t.TeamName,
+                    Value = t.TeamId.ToString(),
+                    Selected = (model.TeamId == t.TeamId)
+                });
 
-                _unitOfWork.Projects.Update(project);
-                await _unitOfWork.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                model.TeamLeads = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 2 && r.Enabled))
+                    .Select(u => new SelectListItem
+                    {
+                        Text = u.UserFName + " " + u.UserLName,
+                        Value = u.UserId.ToString(),
+                        Selected = (model.TeamLeadId == u.UserId)
+                    });
+
+                return View(model);
             }
-
-            model.Teams = _unitOfWork.Teams.GetAll().Select(t => new SelectListItem
+            catch (Exception ex)
             {
-                Text = t.TeamName,
-                Value = t.TeamId.ToString(),
-                Selected = (model.TeamId == t.TeamId)
-            });
-
-            return View(model);
+                Console.WriteLine(ex.Message);
+                return View("Error");
+            }
         }
 
         [HttpGet]
@@ -160,7 +308,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // TeamLead projeyi onaylamak için gönderdiğinde submit edilecek action bu olacak
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitProjectForApproval(int id)
@@ -171,7 +318,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Projeyi onay için gönderildi olarak işaretle
             project.ProjectStatusId = 3; // "Pending Approval"
             _unitOfWork.Projects.Update(project);
             await _unitOfWork.SaveChangesAsync();
@@ -182,7 +328,11 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Approve(int id)
         {
-            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id, includeProperties: "Team");
+            var project = _unitOfWork.Projects.GetAll().AsQueryable()
+                              .Include(p => p.Team)
+                              .Include(p => p.Status)
+                              .FirstOrDefault(p => p.ProjectId == id);
+
             if (project == null)
             {
                 return NotFound();
@@ -195,14 +345,11 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 ProjectDescription = project.ProjectDescription,
                 ProjectStatusId = project.ProjectStatusId,
                 ProjectStatusName = project.Status?.StatusName,
-                // Diğer alanlar burada eklenebilir
             };
 
-            return View(model); // "Approve" view'unu döndürüyoruz
+            return View(model);
         }
 
-
-        // Admin projeyi onayladığında veya reddettiğinde submit edilecek action da bu olacak
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveProject(int id, bool isApproved, string comment)
@@ -216,7 +363,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             if (!isApproved && string.IsNullOrWhiteSpace(comment))
             {
                 ModelState.AddModelError("Comment", "Proje onaylanmadığında bir yorum eklemeniz zorunludur.");
-                // View'a projeyi ve mevcut durumu geri gönder
                 var model = new ProjectVM
                 {
                     ProjectId = project.ProjectId,
@@ -224,25 +370,21 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     ProjectDescription = project.ProjectDescription,
                     ProjectStatusId = project.ProjectStatusId,
                     ProjectStatusName = project.Status?.StatusName,
-                    // Diğer alanları da doldurmanız gerekebilir
                 };
-                return View(model); // Geri döndüğünüz view için uygun ismi belirtin
+                return View(model);
             }
 
-            // Admin onayı durumu
             project.ProjectStatusId = isApproved ? 4 : 5; // "Completed" veya "Rejected"
             _unitOfWork.Projects.Update(project);
             await _unitOfWork.SaveChangesAsync();
 
             if (!isApproved)
             {
-                // Yorum ekleme
                 var commentEntry = new Comment
                 {
                     ProjectId = id,
                     CommentText = comment,
                     CommentDate = DateTime.Now,
-                    // Diğer gerekli alanlar
                 };
                 _unitOfWork.Comments.Add(commentEntry);
                 await _unitOfWork.SaveChangesAsync();

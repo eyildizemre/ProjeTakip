@@ -1,6 +1,13 @@
-﻿@model IEnumerable<ProjeTakip.Models.Project>
+﻿@model IEnumerable<ProjeTakip.Models.ViewModels.ProjectVM>
 
 <h2>Projects</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 @if (Model != null && Model.Any())
 {
@@ -8,7 +15,6 @@
         <thead>
             <tr>
                 <th>Proje</th>
-                <th>Açıklama</th>
                 <th>Ekip</th>
                 <th>Ekip Lideri</th>
                 <th>Başlangıç Tarihi</th>
@@ -21,15 +27,17 @@
             @foreach (var project in Model)
             {
                 <tr>
-                    <td>@project.ProjectName</td>
-                    <td>@project.Team.TeamName</td>
-                    <td>@project.Team.TeamLead</td>
-                    <td>@project.StartDate</td>
-                    <td>@project.EndDate</td>
-                    <td>@project.ProjectStatusId</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@project.ProjectId">Düzenle</a>
-                        <a asp-action="Delete" asp-route-id="@project.ProjectId">Sil</a>
+                        <a href="@Url.Action("Details", new { id = project.ProjectId })">@project.ProjectName</a>
+                    </td>
+                    <td>@project.TeamName</td>
+                    <td>@project.TeamLeadName</td>
+                    <td>@project.StartDate.ToString("dd.MM.yyyy")</td>
+                    <td>@project.EndDate.ToString("dd.MM.yyyy")</td>
+                    <td>@project.ProjectStatusName</td>
+                    <td>
+                        <a class="btn btn-primary" href="@Url.Action("Edit", new { id = project.ProjectId })">Düzenle</a> |
+                        <a class="btn btn-danger" href="@Url.Action("Delete", new { id = project.ProjectId })">Sil</a>
                     </td>
                 </tr>
             }

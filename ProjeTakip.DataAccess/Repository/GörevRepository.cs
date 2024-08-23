@@ -32,7 +32,8 @@ namespace ProjeTakip.DataAccess.Repository
 				objFromDb.GitHubPush = görev.GitHubPush;
 				objFromDb.TaskStatusId = görev.TaskStatusId;
 				objFromDb.TaskCommentId = görev.TaskCommentId;
-				objFromDb.Enabled = görev.Enabled;
+				objFromDb.ProjectId = görev.ProjectId;
+                objFromDb.Enabled = görev.Enabled;
 			}
 		}
 	}

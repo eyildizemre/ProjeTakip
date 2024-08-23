@@ -42,5 +42,4 @@ namespace ProjeTakip.Models
         public ICollection<Project> LeadProjects { get; set; }
 		public ICollection<Görev> Tasks { get; set; }
 	}
-
 }

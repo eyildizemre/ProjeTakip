@@ -79,6 +79,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 {
                     UserId = user.UserId,
                     RoleId = model.RoleId,
+                    Enabled = true
                 };
                 _unitOfWork.UserRoles.Add(userRole);
                 await _unitOfWork.SaveChangesAsync();

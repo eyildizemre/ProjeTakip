@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace ProjeTakip.DataAccess.Data
 {
-	public class ProjeDbContext : DbContext
-	{
-		public ProjeDbContext(DbContextOptions<ProjeDbContext> options) : base(options)
-		{
-		}
+    public class ProjeDbContext : DbContext
+    {
+        public ProjeDbContext(DbContextOptions<ProjeDbContext> options) : base(options)
+        {
+        }
 
-		public DbSet<User> Users { get; set; }
-		public DbSet<Role> Roles { get; set; }
-		public DbSet<UserRole> UserRoles { get; set; }
-		public DbSet<Team> Teams { get; set; }
-		public DbSet<UserTeam> UsersTeams { get; set; }
-		public DbSet<Project> Projects { get; set; }
-		public DbSet<Görev> Tasks { get; set; }
-		public DbSet<Comment> Comments { get; set; }
-		public DbSet<Status> Status { get; set; }
-		public DbSet<Notification> Notifications { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<UserTeam> UsersTeams { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Görev> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Status> Status { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
             // Fluent API ile ilişkileri tanımlama
 
@@ -59,10 +59,10 @@ namespace ProjeTakip.DataAccess.Data
 
             // Project tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Project>()
-				.HasOne(p => p.Team)
-				.WithMany(t => t.Projects)
-				.HasForeignKey(p => p.TeamId)
-				.OnDelete(DeleteBehavior.Restrict); // Eğer bir takım silinirse, projedeki TeamId null olacak.
+                .HasOne(p => p.Team)
+                .WithMany(t => t.Projects)
+                .HasForeignKey(p => p.TeamId)
+                .OnDelete(DeleteBehavior.Restrict); // Eğer bir takım silinirse, projedeki TeamId null olacak.
 
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.TeamLead)
@@ -147,10 +147,16 @@ namespace ProjeTakip.DataAccess.Data
 
             // Görev tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Görev>()
-				.HasOne(g => g.User)
-				.WithMany()
-				.HasForeignKey(g => g.UserId)
-				.OnDelete(DeleteBehavior.Restrict); // User silindiğinde görev silinmez.
+               .HasOne(g => g.Project)
+               .WithMany(p => p.Tasks) // Projede birden fazla görev olabilir
+               .HasForeignKey(g => g.ProjectId)
+               .OnDelete(DeleteBehavior.Cascade); // Proje silindiğinde ilişkili görevler de silinir
+
+            modelBuilder.Entity<Görev>()
+                .HasOne(g => g.User)
+                .WithMany()
+                .HasForeignKey(g => g.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // User silindiğinde görev silinmez.
 
             modelBuilder.Entity<Görev>()
                 .HasOne(g => g.Status)
@@ -172,10 +178,10 @@ namespace ProjeTakip.DataAccess.Data
 
             // Comment tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Comment>()
-				.HasOne(c => c.TeamLead)
-				.WithMany()
-				.HasForeignKey(c => c.TeamLeadId)
-				.OnDelete(DeleteBehavior.Restrict); // Bu, TeamLead silindiğinde Comment'in silinmemesini sağlar.
+                .HasOne(c => c.TeamLead)
+                .WithMany()
+                .HasForeignKey(c => c.TeamLeadId)
+                .OnDelete(DeleteBehavior.Restrict); // Bu, TeamLead silindiğinde Comment'in silinmemesini sağlar.
 
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.TeamMember)
@@ -184,16 +190,16 @@ namespace ProjeTakip.DataAccess.Data
                 .OnDelete(DeleteBehavior.Restrict); // Bu, TeamMember silindiğinde Comment'in silinmemesini sağlar.
 
             modelBuilder.Entity<Comment>()
-				.HasOne(c => c.Görev)
-				.WithMany(t => t.Comments)
-				.HasForeignKey(c => c.TaskId)
-				.OnDelete(DeleteBehavior.Restrict); // Bu, Task silindiğinde ilgili Comment'lerin de silinmesini sağlar.
+                .HasOne(c => c.Görev)
+                .WithMany(t => t.Comments)
+                .HasForeignKey(c => c.TaskId)
+                .OnDelete(DeleteBehavior.Restrict); // Bu, Task silindiğinde ilgili Comment'lerin de silinmesini sağlar.
 
             modelBuilder.Entity<Comment>()
-				.HasOne(c => c.Project)  // Project navigation property kullanılmalı
-				.WithMany(p => p.Comments)
-				.HasForeignKey(c => c.ProjectId)
-				.OnDelete(DeleteBehavior.Cascade); // Bu, Project silindiğinde ilgili Comment'lerin de silinmesini sağlar.
+                .HasOne(c => c.Project)  // Project navigation property kullanılmalı
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade); // Bu, Project silindiğinde ilgili Comment'lerin de silinmesini sağlar.
 
             // Status tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Status>()
@@ -210,10 +216,10 @@ namespace ProjeTakip.DataAccess.Data
 
             // Notification tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Notification>()
-				.HasOne(n => n.CommentedBy)
-				.WithMany()
-				.HasForeignKey(n => n.CommentedById)
-				.OnDelete(DeleteBehavior.Restrict); // Bildirimi oluşturan kişi silinse bile bildirimler silinmez
+                .HasOne(n => n.CommentedBy)
+                .WithMany()
+                .HasForeignKey(n => n.CommentedById)
+                .OnDelete(DeleteBehavior.Restrict); // Bildirimi oluşturan kişi silinse bile bildirimler silinmez
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.CommentedAt)
@@ -223,37 +229,37 @@ namespace ProjeTakip.DataAccess.Data
 
             // Seed Verileri
             modelBuilder.Entity<Role>().HasData(
-				new Role { RoleId = 1, RoleName = "Admin" },
-				new Role { RoleId = 2, RoleName = "Team Lead" },
-				new Role { RoleId = 3, RoleName = "Team Member" }
-			);
+                new Role { RoleId = 1, RoleName = "Admin" },
+                new Role { RoleId = 2, RoleName = "Team Lead" },
+                new Role { RoleId = 3, RoleName = "Team Member" }
+            );
 
-			modelBuilder.Entity<Status>().HasData(
-				new Status { StatusId = 1, StatusName = "Not Started", StatusColor = "#FF0000" },
-				new Status { StatusId = 2, StatusName = "In Progress", StatusColor = "#00FF00" },
-				new Status { StatusId = 3, StatusName = "Completed", StatusColor = "#0000FF" },
-				new Status { StatusId = 4, StatusName = "Failed", StatusColor = "#FFFF00" }
-			);
+            modelBuilder.Entity<Status>().HasData(
+                new Status { StatusId = 1, StatusName = "Not Started", StatusColor = "#FF0000" },
+                new Status { StatusId = 2, StatusName = "In Progress", StatusColor = "#00FF00" },
+                new Status { StatusId = 3, StatusName = "Completed", StatusColor = "#0000FF" },
+                new Status { StatusId = 4, StatusName = "Failed", StatusColor = "#FFFF00" }
+            );
 
             var salt = BCrypt.Net.BCrypt.GenerateSalt();
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword("Admin123*", salt);
 
             modelBuilder.Entity<User>().HasData(
-				new User
-				{
-					UserId = 1,
-					UserFName = "Admin",
-					UserLName = "User",
-					UserEmail = "admin@gmail.com",
-					UserSalt = salt,
-					UserHash = hashedPassword,
-					GitHubProfile = "https://github.com/eyildizemre",
-					Enabled = true
-				}
-			);
+                new User
+                {
+                    UserId = 1,
+                    UserFName = "Admin",
+                    UserLName = "User",
+                    UserEmail = "admin@gmail.com",
+                    UserSalt = salt,
+                    UserHash = hashedPassword,
+                    GitHubProfile = "https://github.com/eyildizemre",
+                    Enabled = true
+                }
+            );
 
-			modelBuilder.Entity<UserRole>().HasData(
-				new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true });
-		}
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true });
+        }
     }
 }

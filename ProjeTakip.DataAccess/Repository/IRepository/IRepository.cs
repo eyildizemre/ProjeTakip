@@ -9,13 +9,11 @@ namespace ProjeTakip.DataAccess.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll(string? includeProperties = null); // includeProperties parametresi eklendi
-        T Get(object primaryKey);
+        IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
+        T GetFirstOrDefault(Expression<Func<T, bool>> filter, string includeProperties = null);
         void Add(T entity);
         void Remove(object primaryKey);
         void Remove(T entity);
-
-        // Yeni eklenen GetFirstOrDefault metodu
-        T GetFirstOrDefault(Expression<Func<T, bool>> filter, string includeProperties = null);
+        T Get(object primaryKey);
     }
 }

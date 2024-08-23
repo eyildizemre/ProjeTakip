@@ -1,0 +1,56 @@
+﻿@model ProjeTakip.Models.ViewModels.ProjectVM
+
+<h2>Proje Onayı</h2>
+
+<div class="form-group">
+    <label>Proje Adı:</label>
+    <p>@Model.ProjectName</p>
+</div>
+
+<div class="form-group">
+    <label>Açıklama:</label>
+    <p>@Model.ProjectDescription</p>
+</div>
+
+<div class="form-group">
+    <label>Başlangıç Tarihi:</label>
+    <p>@Model.StartDate.ToString("dd/MM/yyyy")</p>
+</div>
+
+<div class="form-group">
+    <label>Bitiş Tarihi:</label>
+    <p>@Model.EndDate.ToString("dd/MM/yyyy")</p>
+</div>
+
+<div class="form-group">
+    <label>Takım:</label>
+    <p>@Model.TeamName</p>
+</div>
+
+<div class="form-group">
+    <label>Takım Lideri:</label>
+    <p>@Model.TeamLeadName</p>
+</div>
+
+<form asp-action="ApproveProject" method="post">
+    <input type="hidden" asp-for="ProjectId" />
+
+    <div class="form-group">
+        <label>Yorum:</label>
+        <textarea asp-for="Comment" class="form-control"></textarea>
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Onay Durumu:</label><br />
+        <input type="radio" asp-for="IsApproved" value="true" /> Onayla<br />
+        <input type="radio" asp-for="IsApproved" value="false" /> Onaylama
+        <span asp-validation-for="IsApproved" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gönder</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

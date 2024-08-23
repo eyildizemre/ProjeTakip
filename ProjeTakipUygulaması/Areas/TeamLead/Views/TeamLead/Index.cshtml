@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "TeamLead Dashboard";
+}
+
+<h2>TeamLead Dashboard</h2>
+
+<div class="sidebar">
+    <!-- Sidebarda bulunacak Ekip Yönetimi ve Onay Bekleyen Görevler gibi bölümler burada yer alacak. -->
+</div>
+
+<div class="calendar">
+    <!-- Takvim burada gösterilecek -->
+    <div id="calendar"></div>
+</div>
+
+@section Scripts {
+    <!-- Takvim için gerekli scriptler burada yer alacak -->
+    <script>
+        $(document).ready(function () {
+            $('#calendar').fullCalendar({
+                // Takvim ayarları burada yapılacak
+            });
+        });
+    </script>
+}
