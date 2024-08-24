@@ -48,7 +48,7 @@ namespace ProjeTakipUygulaması.Controllers
                         }
                         else if (userRole.RoleId == 2)
                         {
-                            return RedirectToAction("Index", "TeamLead", new { area = "TeamLead" });
+                            return RedirectToAction("Index", "Dashboard", new { area = "TeamLead" });
                         }
                         else if (userRole.RoleId == 3)
                         {

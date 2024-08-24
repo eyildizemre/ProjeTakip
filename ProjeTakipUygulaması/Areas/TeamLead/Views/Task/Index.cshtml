@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ProjeTakip.Models.ViewModels.TaskVM>
+
+@{
+    ViewData["Title"] = "Görevler";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Görev İsmi</th>
+                <th>Atanan Kullanıcı</th>
+                <th>Proje Adı</th>
+                <th>Başlangıç Tarihi</th>
+                <th>Bitiş Tarihi</th>
+                <th>Görev Durumu</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.TaskName</td>
+                    <td>@task.UserFullName</td>
+                    <td>@task.ProjectName</td>
+                    <td>@task.StartDate.ToShortDateString()</td>
+                    <td>@task.EndDate.ToShortDateString()</td>
+                    <td>@task.TaskStatusName</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-warning btn-sm">Düzenle</a>
+                        <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-danger btn-sm">Sil</a>
+                        <a asp-action="Details" asp-route-id="@task.TaskId" class="btn btn-info btn-sm">Detaylar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Gösterilecek görev bulunamadı.</p>
+}
+
+<a asp-action="Create" class="btn btn-primary">Yeni Görev Ekle</a>

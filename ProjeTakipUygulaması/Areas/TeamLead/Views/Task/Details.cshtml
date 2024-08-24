@@ -1,0 +1,79 @@
+﻿@model ProjeTakip.Models.ViewModels.TaskVM
+
+@{
+    ViewData["Title"] = "Görev Detayları";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="details-container">
+    <div class="detail-item">
+        <strong>Görev İsmi:</strong>
+        <p>@Model.TaskName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Görev Açıklaması:</strong>
+        <p>@Model.TaskDescription</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Atanan Kullanıcı:</strong>
+        <p>@Model.UserFullName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Proje:</strong>
+        <p>@Model.ProjectName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Görev Durumu:</strong>
+        <p>@Model.TaskStatusName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Başlangıç Tarihi:</strong>
+        <p>@Model.StartDate.ToShortDateString()</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Bitiş Tarihi:</strong>
+        <p>@Model.EndDate.ToShortDateString()</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>GitHub Push URL:</strong>
+        <p>@Model.GitHubPush</p>
+    </div>
+
+    <div class="form-group">
+        <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    </div>
+</div>
+
+<style>
+    .details-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .detail-item {
+        margin-bottom: 15px;
+    }
+
+    .detail-item strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .detail-item p {
+        margin: 0;
+        padding: 8px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+    }
+</style>

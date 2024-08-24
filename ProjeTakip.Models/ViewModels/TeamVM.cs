@@ -20,5 +20,7 @@ namespace ProjeTakip.Models.ViewModels
             SelectedUserIds = new List<int>();
             UserTeams = new List<UserTeam>();
         }
+
+        public List<CalendarEvent> CalendarEvents { get; set; }
     }
 }

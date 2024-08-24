@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 {
     [Area("TeamLead")]
-    public class TeamLeadController : Controller
+    public class DashboardController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public TeamLeadController(IUnitOfWork unitOfWork)
+        public DashboardController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

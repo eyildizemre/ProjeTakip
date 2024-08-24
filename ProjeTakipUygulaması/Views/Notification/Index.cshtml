@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ProjeTakip.Models.Notification>
+
+<h2>Bildirimler</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Gönderen</th>
+            <th>Mesaj</th>
+            <th>Gönderilme Tarihi</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var notification in Model)
+        {
+            <tr>
+                <td>@(notification.CommentedBy != null ? notification.CommentedBy.UserFName + " " + notification.CommentedBy.UserLName : "Sistem")</td>
+                <td>@notification.Message</td>
+                <td>@notification.CreatedAt.ToShortDateString()</td>
+                <td>@(notification.IsRead == true ? "Okundu" : "Okunmadı")</td>
+                <td>
+                    @if (notification.IsRead == false)
+                    {
+                        <a asp-action="MarkAsRead" asp-route-id="@notification.NotificationId" class="btn btn-primary btn-sm">Okundu</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ProjeTakip.Models.Notification>
+
+<div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Bildirimler (@Model.Count())
+    </a>
+
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        @foreach (var notification in Model.Take(5))
+        {
+            <a class="dropdown-item" href="@Url.Action("Index", "Notification")">
+                @if (notification.IsRead == false)
+                {
+                    <strong>@notification.Message</strong>
+                }
+                else
+                {
+                    @notification.Message
+                }
+            </a>
+        }
+    </div>
+</div>
