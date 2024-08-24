@@ -1,6 +1,12 @@
-﻿@model ProjeTakip.Models.ViewModels.LoginVM
+﻿@{
+    Layout = "_LoginLayout";
+}
 
-<h2>Kullanıcı Girişi</h2>
+@model ProjeTakip.Models.ViewModels.LoginVM
+
+<div class="mt-3">
+    <h2>Kullanıcı Girişi</h2>
+</div>
 
 <form asp-controller="Account" asp-action="Login" method="post">
     <div class="form-group">

@@ -1,4 +1,5 @@
-﻿using ProjeTakip.DataAccess.Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjeTakip.DataAccess.Repository.IRepository;
 using ProjeTakip.Models;
 
 namespace ProjeTakipUygulaması.Services
@@ -14,12 +15,17 @@ namespace ProjeTakipUygulaması.Services
 
         public List<CalendarEvent> GetCalendarEvents()
         {
-            var events = _unitOfWork.Tasks.GetAll().Select(t => new CalendarEvent
+            var tasks = _unitOfWork.Tasks.GetAll()
+                .AsQueryable()
+                .Include(t => t.Status)
+                .ToList(); // Sorguyu burada çalıştırıyoruz
+
+            var events = tasks.Select(t => new CalendarEvent
             {
                 Title = t.TaskName,
                 Start = t.StartDate.ToString("yyyy-MM-dd"),
                 End = t.EndDate.ToString("yyyy-MM-dd"),
-                BackgroundColor = t.Status.StatusColor // Renk direkt olarak StatusColor'dan alınıyor
+                BackgroundColor = t.Status?.StatusColor ?? "#cccccc" // Null kontrolünü burada yapıyoruz
             }).ToList();
 
             return events;

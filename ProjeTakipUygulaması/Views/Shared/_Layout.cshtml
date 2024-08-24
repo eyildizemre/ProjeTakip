@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,41 +11,92 @@
     <link rel="stylesheet" href="~/ProjeTakipUygulaması.styles.css" asp-append-version="true" />
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="~/css/calendar.css" />
+    <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info bg-gradient border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ProjeTakipUygulaması</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <div class="navbar-collapse collapse d-sm-inline-flex">
+                    <span class="col-12 text-center">Proje Takip</span>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            <partial name="_Notification" />
-            @RenderBody()
-        </main>
-    </div>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar-->
+        @{
+            var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
+            var roleName = "";
+            var links = new List<(string LinkText, string Controller, string Action)>();
 
-    <footer class="border-top footer text-muted">
+            if (roleId == 1) // Admin
+            {
+                roleName = "Admin";
+                links = new List<(string LinkText, string Controller, string Action)>
+                {
+                ("Ana Sayfa", "Admin", "Index"),
+                ("Profil Yönetimi", "Account", "Index"),
+                ("Kullanıcı Denetimi", "User", "AllUsers"),
+                ("Ekip", "Team", "Index"),
+                ("Proje", "Project", "Index"),
+                ("Bildirimler", "Notification", "Index"),
+                ("Çıkış", "Account", "Logout")
+                };
+            }
+            else if (roleId == 2) // TeamLead
+            {
+                roleName = "Ekip Yöneticisi";
+                links = new List<(string LinkText, string Controller, string Action)>
+                {
+                ("Ana Sayfa", "DashBoard", "Index"),
+                ("Profil Yönetimi", "Account", "Index"),
+                ("Projeler", "Project", "Index"),
+                ("Görevler", "Task", "Index"),
+                ("Bildirimler", "Notification", "Index"),
+                ("Çıkış", "Account", "Logout")
+                };
+            }
+            else if (roleId == 3) // TeamMember
+            {
+                roleName = "Ekip Üyesi";
+                links = new List<(string LinkText, string Controller, string Action)>
+                {
+                ("Ana Sayfa", "Home", "Index"),
+                ("Profil Yönetimi", "Account", "Index"),
+                ("Projeler", "Project", "Index"),  // İsteğe bağlı olarak kaldırılabilir
+                ("Görevler", "Task", "Index"),
+                ("Bildirimler", "Notification", "Index"),
+                ("Çıkış", "Account", "Logout")
+                };
+            }
+        }
+
+        <div class="border-end bg-white" id="sidebar-wrapper">
+            <div class="sidebar-heading border-bottom bg-light">@roleName</div>
+            <div class="list-group list-group-flush">
+                @foreach (var link in links)
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" asp-controller="@link.Controller" asp-action="@link.Action">@link.LinkText</a>
+                }
+            </div>
+        </div>
+
+        <!-- Page content wrapper-->
+        <div id="page-content-wrapper">
+            <div class="container">
+                <main role="main" class="pb-3">
+                    <partial name="_Notification" />
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    <footer class="border-top footer text-muted text-center">
         <div class="container">
-            &copy; 2024 - ProjeTakipUygulaması - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - ProjeTakipUygulaması
         </div>
     </footer>
+    <script src="~/js/scripts.js"></script>
     <script src="~/js/calendar.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

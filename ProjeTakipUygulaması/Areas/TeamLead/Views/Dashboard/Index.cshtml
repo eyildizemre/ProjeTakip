@@ -6,13 +6,13 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3">
+        @* <div class="col-md-3">
             <!-- Sidebar -->
             <div class="list-group">
                 <a href="@Url.Action("", "Task", new { area = "TeamLead" })" class="list-group-item list-group-item-action">Görevleri Görüntüle</a>
                 <a href="@Url.Action("Create", "Task", new { area = "TeamLead" })" class="list-group-item list-group-item-action">Görev Ekle</a>
             </div>
-        </div>
+        </div> *@
         <div class="col-md-9">
             <h3 class="mt-4">Hoşgeldin, @(Model.TeamLeadName ?? "Kullanıcı")!</h3>
 
