@@ -68,7 +68,7 @@ namespace ProjeTakipUygulaması.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

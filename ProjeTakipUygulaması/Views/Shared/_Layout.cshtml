@@ -28,46 +28,46 @@
         @{
             var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
             var roleName = "";
-            var links = new List<(string LinkText, string Controller, string Action)>();
+            var links = new List<(string LinkText, string Controller, string Action, string Area)>();
 
             if (roleId == 1) // Admin
             {
                 roleName = "Admin";
-                links = new List<(string LinkText, string Controller, string Action)>
+                links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
-                ("Ana Sayfa", "Admin", "Index"),
-                ("Profil Yönetimi", "Account", "Index"),
-                ("Kullanıcı Denetimi", "User", "AllUsers"),
-                ("Ekip", "Team", "Index"),
-                ("Proje", "Project", "Index"),
-                ("Bildirimler", "Notification", "Index"),
-                ("Çıkış", "Account", "Logout")
+                ("Ana Sayfa", "Admin", "Index", "Admin"),
+                ("Profil Yönetimi", "Account", "Index", ""),
+                ("Kullanıcı Denetimi", "User", "AllUsers", "Admin"),
+                ("Ekip", "Team", "Index", "Admin"),
+                ("Proje", "Project", "Index", "Admin"),
+                ("Bildirimler", "Notification", "Index", "Admin"),
+                ("Çıkış", "Account", "Logout", "")
                 };
             }
             else if (roleId == 2) // TeamLead
             {
                 roleName = "Ekip Yöneticisi";
-                links = new List<(string LinkText, string Controller, string Action)>
+                links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
-                ("Ana Sayfa", "DashBoard", "Index"),
-                ("Profil Yönetimi", "Account", "Index"),
-                ("Projeler", "Project", "Index"),
-                ("Görevler", "Task", "Index"),
-                ("Bildirimler", "Notification", "Index"),
-                ("Çıkış", "Account", "Logout")
+                ("Ana Sayfa", "DashBoard", "Index", "TeamLead"),
+                ("Profil Yönetimi", "Account", "Index", ""),
+                ("Projeler", "Project", "Index", "TeamLead"),
+                ("Görevler", "Task", "Index", "TeamLead"),
+                ("Bildirimler", "Notification", "Index", "TeamLead"),
+                ("Çıkış", "Account", "Logout", "")
                 };
             }
             else if (roleId == 3) // TeamMember
             {
                 roleName = "Ekip Üyesi";
-                links = new List<(string LinkText, string Controller, string Action)>
+                links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
-                ("Ana Sayfa", "Home", "Index"),
-                ("Profil Yönetimi", "Account", "Index"),
-                ("Projeler", "Project", "Index"),  // İsteğe bağlı olarak kaldırılabilir
-                ("Görevler", "Task", "Index"),
-                ("Bildirimler", "Notification", "Index"),
-                ("Çıkış", "Account", "Logout")
+                ("Ana Sayfa", "Home", "Index", "TeamMember"),
+                ("Profil Yönetimi", "Account", "Index", ""),
+                ("Projeler", "Project", "Index", "TeamMember"),  // İsteğe bağlı olarak kaldırılabilir
+                ("Görevler", "Task", "Index", "TeamMember"),
+                ("Bildirimler", "Notification", "Index", "TeamMember"),
+                ("Çıkış", "Account", "Logout", "")
                 };
             }
         }
@@ -77,7 +77,7 @@
             <div class="list-group list-group-flush">
                 @foreach (var link in links)
                 {
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" asp-controller="@link.Controller" asp-action="@link.Action">@link.LinkText</a>
+                    <a class="list-group-item list-group-item-action list-group-item-light" href = " @Url.Action(link.Action, link.Controller, new { area = link.Area })">@link.LinkText </a>
                 }
             </div>
         </div>
