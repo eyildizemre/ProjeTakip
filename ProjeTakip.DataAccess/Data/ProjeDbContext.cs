@@ -175,12 +175,12 @@ namespace ProjeTakip.DataAccess.Data
                 .HasForeignKey(g => g.TaskStatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Görev ve Comment İlişkisi
-            modelBuilder.Entity<Görev>()
-                .HasOne(g => g.Comment)
-                .WithOne()
-                .HasForeignKey<Görev>(g => g.TaskCommentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //// Görev ve Comment İlişkisi
+            //modelBuilder.Entity<Görev>()            //modelBuilder.Entity<Görev>()
+            //    .HasOne(g => g.Comment)             //    .HasOne(g => g.Comment)
+            //    .WithMany(c => c.Tasks)             //    .WithOne()
+            //    .HasForeignKey(g => g.CommentId)    //    .HasForeignKey<Görev>(g => g.TaskCommentId)
+            //    .OnDelete(DeleteBehavior.Restrict); //    .OnDelete(DeleteBehavior.Restrict);
 
             // Görev ve Comments İlişkisi (Çoktan çoğa)
             modelBuilder.Entity<Görev>()
@@ -234,17 +234,33 @@ namespace ProjeTakip.DataAccess.Data
                 .OnDelete(DeleteBehavior.Restrict); // Status silindiğinde ilişkili görevler silinmez.
 
             // Notification tablosu ile diğer tablolar arasındaki ilişkiler
+            // Notification ile Görev arasındaki ilişki
             modelBuilder.Entity<Notification>()
-                .HasOne(n => n.CommentedBy)
-                .WithMany()
-                .HasForeignKey(n => n.CommentedById)
-                .OnDelete(DeleteBehavior.Restrict); // Bildirimi oluşturan kişi silinse bile bildirimler silinmez
+                .HasOne(n => n.Task)
+                .WithMany(t => t.Notifications)
+                .HasForeignKey(n => n.TaskId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            // Notification ile Proje arasındaki ilişki
             modelBuilder.Entity<Notification>()
-                .HasOne(n => n.CommentedAt)
+                .HasOne(n => n.Project)
                 .WithMany()
-                .HasForeignKey(n => n.CommentedAtId)
-                .OnDelete(DeleteBehavior.Restrict); // Bildirimin ilgili olduğu kişi silinse bile bildirimler silinmez
+                .HasForeignKey(n => n.ProjectId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Notification ile User (SentBy) arasındaki ilişki
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.SentBy)
+                .WithMany()
+                .HasForeignKey(n => n.SentById)
+                .OnDelete(DeleteBehavior.Restrict); // Bir kullanıcının gönderdiği bildirimin silinmesiyle kullanıcı silinmemeli
+
+            // Notification ile User (ReceivedBy) arasındaki ilişki
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.ReceivedBy)
+                .WithMany()
+                .HasForeignKey(n => n.ReceivedById)
+                .OnDelete(DeleteBehavior.Restrict); // Bir kullanıcının aldığı bildirimin silinmesiyle kullanıcı silinmemeli
 
             // Seed Verileri
             modelBuilder.Entity<Role>().HasData(

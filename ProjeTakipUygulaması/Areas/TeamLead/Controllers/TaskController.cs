@@ -27,7 +27,8 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 TaskId = t.TaskId,
                 TaskName = t.TaskName,
                 TaskDescription = t.TaskDescription,
-                UserId = t.TeamLeadId,
+                UserId = t.AssignedUserId,
+                TeamLeadId = (int)t.TeamLeadId,
                 AssignedUserName = t.AssignedUser != null ? t.AssignedUser.UserFName + " " + t.AssignedUser.UserLName : "Atanmamış",
                 ProjectId = t.ProjectId,
                 ProjectName = t.Project.ProjectName,
@@ -46,6 +47,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
         {
             var model = new TaskVM
             {
+                TeamLeadId = Convert.ToInt32(HttpContext.Session.GetString("UserId")),
                 Users = _unitOfWork.Users.GetAll(u => u.Enabled).Select(u => new SelectListItem
                 {
                     Text = u.UserFName + " " + u.UserLName,
@@ -75,7 +77,8 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 {
                     TaskName = model.TaskName,
                     TaskDescription = model.TaskDescription,
-                    TeamLeadId = model.UserId,
+                    TeamLeadId = model.TeamLeadId,
+                    AssignedUserId = model.UserId,
                     ProjectId = model.ProjectId,
                     StartDate = model.StartDate,
                     EndDate = model.EndDate,
@@ -85,6 +88,19 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 };
 
                 task.AssignedUser = _unitOfWork.Users.GetFirstOrDefault(u => u.UserId == model.UserId);
+
+                // Görevi eklemeden önce proje için ilk görev mi kontrol et
+                var existingTasks = _unitOfWork.Tasks.GetAll(t => t.ProjectId == model.ProjectId && t.Enabled);
+                if (!existingTasks.Any())
+                {
+                    // Bu proje için henüz görev yoksa, projenin StatusId'sini 2 olarak güncelle
+                    var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == model.ProjectId);
+                    if (project != null)
+                    {
+                        project.ProjectStatusId = 2;
+                        _unitOfWork.Projects.Update(project);
+                    }
+                }
 
                 _unitOfWork.Tasks.Add(task);
                 await _unitOfWork.SaveChangesAsync();
@@ -128,7 +144,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 TaskId = task.TaskId,
                 TaskName = task.TaskName,
                 TaskDescription = task.TaskDescription,
-                UserId = task.TeamLeadId,
+                TeamLeadId = (int)task.TeamLeadId, // Burada düzeltildi
                 ProjectId = task.ProjectId,
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,
@@ -138,7 +154,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 {
                     Text = u.UserFName + " " + u.UserLName,
                     Value = u.UserId.ToString(),
-                    Selected = (task.TeamLeadId == u.UserId)
+                    Selected = (task.TeamLeadId == u.UserId) // Burada düzeltildi
                 }).ToList(),
                 Projects = _unitOfWork.Projects.GetAll(p => p.Enabled).Select(p => new SelectListItem
                 {
@@ -171,7 +187,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
                 task.TaskName = model.TaskName;
                 task.TaskDescription = model.TaskDescription;
-                task.TeamLeadId = model.UserId;
+                task.TeamLeadId = model.TeamLeadId; // Burada düzeltildi
                 task.ProjectId = model.ProjectId;
                 task.StartDate = model.StartDate;
                 task.EndDate = model.EndDate;
@@ -188,7 +204,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             {
                 Text = u.UserFName + " " + u.UserLName,
                 Value = u.UserId.ToString(),
-                Selected = (model.UserId == u.UserId)
+                Selected = (model.TeamLeadId == u.UserId) // Burada düzeltildi
             }).ToList();
 
             model.Projects = _unitOfWork.Projects.GetAll(p => p.Enabled).Select(p => new SelectListItem
@@ -277,15 +293,57 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Approve(int taskId)
+        public IActionResult Approve(TaskVM taskVM)
         {
-            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == taskId);
+            // Veritabanından görevi çek ve gerekli ilişkili verileri dahil et
+            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(
+                t => t.TaskId == taskVM.TaskId,
+                includeProperties: "TeamLead,AssignedUser,Project,Status,OnayDurumu");
 
             if (taskFromDb == null)
             {
                 return NotFound();
             }
 
+            // taskVM'yi doldur
+            taskVM = new TaskVM
+            {
+                TaskId = taskFromDb.TaskId,
+                TaskName = taskFromDb.TaskName,
+                TaskDescription = taskFromDb.TaskDescription,
+                StartDate = taskFromDb.StartDate,
+                EndDate = taskFromDb.EndDate,
+                TaskStatusName = taskFromDb.Status?.StatusName,
+                GitHubPush = taskFromDb.GitHubPush,
+                TeamLeadName = $"{taskFromDb.TeamLead.UserFName} {taskFromDb.TeamLead.UserLName}",
+                AssignedUserName = $"{taskFromDb.AssignedUser.UserFName} {taskFromDb.AssignedUser.UserLName}",
+                ProjectName = taskFromDb.Project?.ProjectName,
+                ProjectId = taskFromDb.ProjectId,
+                OnayDurumuId = taskFromDb.OnayDurumu?.OnayDurumuId ?? 0,
+                OnayDurumuAdi = taskFromDb.OnayDurumu?.OnayDurumuAdi ?? "Belirtilmemiş",
+                CommentText = taskVM.CommentText
+            };
+
+            // Yorum eklemek zorunlu değil, ancak varsa eklenir
+            if (!string.IsNullOrWhiteSpace(taskVM.CommentText))
+            {
+                var comment = new Comment
+                {
+                    CommentText = taskVM.CommentText,
+                    CommentDate = DateTime.Now,
+                    TeamLeadId = taskFromDb.TeamLeadId.Value,
+                    TeamMemberId = taskFromDb.AssignedUserId.Value,
+                    TaskId = taskVM.TaskId,
+                    ProjectId = taskFromDb.ProjectId,
+                    Enabled = true
+                };
+                _unitOfWork.Comments.Add(comment);
+
+                // CommentId'yi task'a ekle
+                //taskFromDb.TaskCommentId = comment.CommentId;
+            }
+
+            // Görev durumunu güncelle
             taskFromDb.TaskStatusId = 3; // Task'i "Tamamlandı" durumuna getir
             taskFromDb.OnayDurumuId = 2; // Onay Durumu "Onaylandı" olarak güncelle
 
@@ -297,17 +355,57 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Reject(int taskId)
+        public IActionResult Reject(int taskId, string commentText)
         {
-            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == taskId);
+            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == taskId, includeProperties: "TeamLead,AssignedUser,Project,Status,OnayDurumu");
 
             if (taskFromDb == null)
             {
                 return NotFound();
             }
 
-            taskFromDb.TaskStatusId = 1; // Task'i "Tamamlanmadı" durumuna getir
-            taskFromDb.OnayDurumuId = 3; // Onay Durumu "Reddedildi" olarak güncelle
+            var taskVM = new TaskVM
+            {
+                TaskId = taskFromDb.TaskId,
+                TaskName = taskFromDb.TaskName,
+                TaskDescription = taskFromDb.TaskDescription,
+                StartDate = taskFromDb.StartDate,
+                EndDate = taskFromDb.EndDate,
+                TaskStatusName = taskFromDb.Status?.StatusName,
+                GitHubPush = taskFromDb.GitHubPush,
+                TeamLeadName = $"{taskFromDb.TeamLead.UserFName} {taskFromDb.TeamLead.UserLName}",
+                AssignedUserName = $"{taskFromDb.AssignedUser.UserFName} {taskFromDb.AssignedUser.UserLName}",
+                ProjectName = taskFromDb.Project?.ProjectName,
+                ProjectId = taskFromDb.ProjectId,
+                OnayDurumuId = taskFromDb.OnayDurumu?.OnayDurumuId ?? 0,
+                OnayDurumuAdi = taskFromDb.OnayDurumu?.OnayDurumuAdi ?? "Belirtilmemiş",
+                CommentText = commentText
+            };
+
+            // Yorum kontrolü
+            if (string.IsNullOrWhiteSpace(commentText))
+            {
+                ModelState.AddModelError("CommentText", "Reddetmek için bir yorum girmelisiniz.");
+                return View("Details", taskVM);
+            }
+
+            // Yorum oluştur
+            var comment = new Comment
+            {
+                CommentText = taskVM.CommentText,
+                CommentDate = DateTime.Now,
+                TeamLeadId = (int)taskFromDb.TeamLeadId,
+                TeamMemberId = (int)taskFromDb.AssignedUserId,
+                TaskId = taskFromDb.TaskId,
+                ProjectId = taskFromDb.ProjectId, // ProjectId doğru şekilde ayarlanıyor
+                Enabled = true
+            };
+
+            _unitOfWork.Comments.Add(comment);
+
+            //taskFromDb.TaskCommentId = comment.CommentId;
+            taskFromDb.TaskStatusId = 2;
+            taskFromDb.OnayDurumuId = 3;
 
             _unitOfWork.Tasks.Update(taskFromDb);
             _unitOfWork.SaveChanges();

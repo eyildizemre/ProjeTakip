@@ -16,26 +16,28 @@
         @foreach (var task in Model)
         {
             <tr>
-                <td class="btn-outline-light">@Html.ActionLink(task.TaskName, "Details", new { id = task.TaskId })</td>
+                <td>
+                    @Html.ActionLink(task.TaskName, "Details", new { id = task.TaskId }, new { @class = "btn btn-outline-secondary" })
+                </td>
                 @if (task.OnayDurumuId == 2)
                 {
-                    <td><span class="bg-success">@task.OnayDurumuAdi</span></td>
+                    <td class="bg-success">@task.OnayDurumuAdi</td>
                 }
                 else if (task.OnayDurumuId == 1)
                 {
-                    <td><span class="bg-warning">@task.OnayDurumuAdi</span></td>
+                    <td class="bg-warning">@task.OnayDurumuAdi</td>
                 }
                 else if (task.OnayDurumuId == 3)
                 {
-                    <td><span class="bg-danger">@task.OnayDurumuAdi</span></td>
+                    <td class="bg-danger">@task.OnayDurumuAdi</td>
                 }
                 else if (task.OnayDurumuId == 4 && task.TaskStatusId == 2)
                 {
-                    <td><span class="bg-info">@task.TaskStatusName</span></td>
+                    <td class="bg-info">@task.TaskStatusName</td>
                 }
                 else
                 {
-                    <td><span class="bg-info">@task.TaskStatusName</span></td>
+                   <td class="bg-info">@task.TaskStatusName</td>
                 }
                 <td>@task.StartDate.ToString("yyyy-MM-dd")</td>
                 <td>@task.EndDate.ToString("yyyy-MM-dd")</td>

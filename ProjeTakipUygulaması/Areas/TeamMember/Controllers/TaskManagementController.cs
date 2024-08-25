@@ -42,12 +42,13 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
         {
             var task = _unitOfWork.Tasks.GetFirstOrDefault(
                 t => t.TaskId == id,
-                includeProperties: "TeamLead,AssignedUser,Status,Project");
+                includeProperties: "TeamLead,AssignedUser,Status,Project,Comments");
 
             if (task == null)
             {
                 return NotFound();
             }
+            var latestComment = task.Comments?.OrderByDescending(c => c.CommentDate).FirstOrDefault();
 
             var taskVM = new TaskVM
             {
@@ -57,10 +58,13 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,
                 TaskStatusName = task.Status.StatusName,
-                GitHubPush = task.GitHubPush, // Kullanıcı kendisi bunu niye görsün? - Görsün.
+                GitHubPush = task.GitHubPush,
                 TeamLeadName = $"{task.TeamLead.UserFName} {task.TeamLead.UserLName}",
                 AssignedUserName = $"{task.AssignedUser.UserFName} {task.AssignedUser.UserLName}",
-                ProjectName = task.Project?.ProjectName // Proje ismini burada alıyoruz
+                ProjectName = task.Project?.ProjectName,
+                OnayDurumuId = task.OnayDurumuId ?? 0,
+                OnayDurumuAdi = task.OnayDurumu != null ? task.OnayDurumu.OnayDurumuAdi : "Belirtilmemiş",
+                CommentText = latestComment?.CommentText ?? "Yorum bulunmuyor." // Görev ile ilgili yorum
             };
 
             return View(taskVM);

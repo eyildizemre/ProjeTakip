@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjeTakip.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class TablolarVeSeedData : Migration
+    public partial class Tablolar : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,35 +73,6 @@ namespace ProjeTakip.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    NotificationId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CommentedById = table.Column<int>(type: "int", nullable: true),
-                    CommentedAtId = table.Column<int>(type: "int", nullable: true),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_CommentedAtId",
-                        column: x => x.CommentedAtId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_CommentedById",
-                        column: x => x.CommentedById,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
@@ -138,7 +109,7 @@ namespace ProjeTakip.DataAccess.Migrations
                     CommentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TeamLeadId = table.Column<int>(type: "int", nullable: false),
                     TeamMemberId = table.Column<int>(type: "int", nullable: false),
-                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    TaskId = table.Column<int>(type: "int", nullable: true),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -154,6 +125,38 @@ namespace ProjeTakip.DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Comments_Users_TeamMemberId",
                         column: x => x.TeamMemberId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SentById = table.Column<int>(type: "int", nullable: true),
+                    ReceivedById = table.Column<int>(type: "int", nullable: true),
+                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: true),
+                    TaskId = table.Column<int>(type: "int", nullable: true),
+                    ProjectId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_ReceivedById",
+                        column: x => x.ReceivedById,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_SentById",
+                        column: x => x.SentById,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
@@ -205,11 +208,10 @@ namespace ProjeTakip.DataAccess.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GitHubPush = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     TaskStatusId = table.Column<int>(type: "int", nullable: false),
-                    TaskCommentId = table.Column<int>(type: "int", nullable: true),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    OnayDurumuId = table.Column<int>(type: "int", nullable: false),
-                    Enabled = table.Column<bool>(type: "bit", nullable: false),
+                    OnayDurumuId = table.Column<int>(type: "int", nullable: true),
                     CommentId = table.Column<int>(type: "int", nullable: true),
+                    Enabled = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -220,12 +222,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         column: x => x.CommentId,
                         principalTable: "Comments",
                         principalColumn: "CommentId");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Comments_TaskCommentId",
-                        column: x => x.TaskCommentId,
-                        principalTable: "Comments",
-                        principalColumn: "CommentId",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tasks_OnayDurumu_OnayDurumuId",
                         column: x => x.OnayDurumuId,
@@ -334,7 +330,8 @@ namespace ProjeTakip.DataAccess.Migrations
                 {
                     { 1, "Onay Bekliyor" },
                     { 2, "Onaylandı" },
-                    { 3, "Reddedildi" }
+                    { 3, "Reddedildi" },
+                    { 4, "Onay durumu yok" }
                 });
 
             migrationBuilder.InsertData(
@@ -361,7 +358,7 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$6U7ROVnCWAjGs9chevycC.zMXlayMyqXOIZk86Q0SbUZcnUsC/JQe", "User", "$2a$11$6U7ROVnCWAjGs9chevycC." });
+                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$o8fR6PU2y5Q6CZPdkikIAesCVqqJrw8/ma7X33IWUCPXauydVF0WS", "User", "$2a$11$o8fR6PU2y5Q6CZPdkikIAe" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
@@ -389,14 +386,24 @@ namespace ProjeTakip.DataAccess.Migrations
                 column: "TeamMemberId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_CommentedAtId",
+                name: "IX_Notifications_ProjectId",
                 table: "Notifications",
-                column: "CommentedAtId");
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_CommentedById",
+                name: "IX_Notifications_ReceivedById",
                 table: "Notifications",
-                column: "CommentedById");
+                column: "ReceivedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_SentById",
+                table: "Notifications",
+                column: "SentById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_TaskId",
+                table: "Notifications",
+                column: "TaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectStatusId",
@@ -432,13 +439,6 @@ namespace ProjeTakip.DataAccess.Migrations
                 name: "IX_Tasks_ProjectId",
                 table: "Tasks",
                 column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskCommentId",
-                table: "Tasks",
-                column: "TaskCommentId",
-                unique: true,
-                filter: "[TaskCommentId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_TaskStatusId",
@@ -505,6 +505,20 @@ namespace ProjeTakip.DataAccess.Migrations
                 principalTable: "Tasks",
                 principalColumn: "TaskId",
                 onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_Projects_ProjectId",
+                table: "Notifications",
+                column: "ProjectId",
+                principalTable: "Projects",
+                principalColumn: "ProjectId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_Tasks_TaskId",
+                table: "Notifications",
+                column: "TaskId",
+                principalTable: "Tasks",
+                principalColumn: "TaskId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Projects_Teams_TeamId",

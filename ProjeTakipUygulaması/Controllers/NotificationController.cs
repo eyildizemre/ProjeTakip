@@ -17,15 +17,14 @@ namespace ProjeTakipUygulaması.Controllers
         public IActionResult Index()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
 
-            if (userId == null || roleId == null)
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
             // Kullanıcının ilgili olduğu bildirimleri alıyoruz
-            var notifications = _unitOfWork.Notifications.GetAll(n => n.CommentedAtId == userId)
+            var notifications = _unitOfWork.Notifications.GetAll(n => n.ReceivedById == userId)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToList();
 
@@ -45,15 +44,17 @@ namespace ProjeTakipUygulaması.Controllers
         }
 
         // Yeni bildirim oluşturma (görev, yorum vb. durumlar için kullanılabilir)
-        public async Task<IActionResult> CreateNotification(int commentedAtId, int? commentedById, string message)
+        public async Task<IActionResult> CreateNotification(int receivedById, int? sentById, string message, int? taskId = null, int? projectId = null)
         {
             var notification = new Notification
             {
-                CommentedAtId = commentedAtId,
-                CommentedById = commentedById,
+                ReceivedById = receivedById,
+                SentById = sentById,
                 Message = message,
                 CreatedAt = DateTime.Now,
-                IsRead = false
+                IsRead = false,
+                TaskId = taskId,
+                ProjectId = projectId
             };
 
             _unitOfWork.Notifications.Add(notification);

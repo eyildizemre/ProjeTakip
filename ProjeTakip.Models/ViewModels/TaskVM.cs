@@ -65,6 +65,10 @@ namespace ProjeTakip.Models.ViewModels
 
         [ValidateNever]
         [Display(Name = "Görev Veren")]
+        public int TeamLeadId { get; set; } // Görevi veren TeamLead'in ID'si
+
+        [ValidateNever]
+        [Display(Name = "Görev Veren")]
         public string TeamLeadName { get; set; } // Görevi veren TeamLead'in adı ve soyadı
 
         [Display(Name = "Başlangıç Tarihi")]

@@ -22,11 +22,11 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="UserId" class="control-label">Atanan Kullanıcı</label>
-        <select asp-for="UserId" class="form-control" asp-items="Model.Users">
+        <label asp-for="TeamLeadId" class="control-label">Atanan Kullanıcı</label> <!-- Bu kısım güncellendi -->
+        <select asp-for="TeamLeadId" class="form-control" asp-items="Model.Users">
             <option value="">Bir kullanıcı seçin</option>
         </select>
-        <span asp-validation-for="UserId" class="text-danger"></span>
+        <span asp-validation-for="TeamLeadId" class="text-danger"></span> <!-- Bu kısım güncellendi -->
     </div>
 
     <div class="form-group">

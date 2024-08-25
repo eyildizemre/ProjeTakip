@@ -36,14 +36,16 @@ namespace ProjeTakip.Models
         [ForeignKey("TaskStatusId")]
         public int TaskStatusId { get; set; } = 2;
 
-        [ForeignKey("TaskCommentId")]
-        public int? TaskCommentId { get; set; }
+        //[ForeignKey("TaskCommentId")]
+        //public int? TaskCommentId { get; set; }
 
         [ForeignKey("ProjectId")]
         public int ProjectId { get; set; } // Görev'in ait olduğu Proje
 
         [ForeignKey("OnayDurumuId")]
         public int? OnayDurumuId { get; set; }
+
+        public int? CommentId { get; set; }
 
         public bool Enabled { get; set; }
 
@@ -53,5 +55,6 @@ namespace ProjeTakip.Models
         public Project Project { get; set; } // Navigasyon özelliği
         public ICollection<Comment> Comments { get; set; } // Comment ile ilişkili navigasyon özelliği
         public OnayDurumu OnayDurumu { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

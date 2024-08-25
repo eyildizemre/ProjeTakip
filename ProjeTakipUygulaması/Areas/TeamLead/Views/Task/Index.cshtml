@@ -31,7 +31,9 @@
             @foreach (var task in Model)
             {
                 <tr>
-                    <td>@task.TaskName</td>
+                    <td>
+                        @Html.ActionLink(task.TaskName, "Details", new { id = task.TaskId }, new { @class = "btn btn-outline-secondary" })
+                    </td>
                     <td>@task.AssignedUserName</td>
                     <td>@task.ProjectName</td>
                     <td>@task.StartDate.ToShortDateString()</td>
@@ -46,11 +48,13 @@
                     } else if (task.OnayDurumuId == 3)
                     {
                         <td class="bg-danger">@task.OnayDurumuAdi</td>
+                    } else if (task.OnayDurumuId == 4)
+                    {
+                        <td class="bg-light">@task.TaskStatusName</td>
                     }
                     <td>
                         <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-warning btn-sm">Düzenle</a>
                         <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-danger btn-sm">Sil</a>
-                        <a asp-action="Details" asp-route-id="@task.TaskId" class="btn btn-info btn-sm">Detaylar</a>
                     </td>
                 </tr>
             }

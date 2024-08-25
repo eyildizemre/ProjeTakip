@@ -16,12 +16,12 @@
         @foreach (var notification in Model)
         {
             <tr>
-                <td>@(notification.CommentedBy != null ? notification.CommentedBy.UserFName + " " + notification.CommentedBy.UserLName : "Sistem")</td>
+                <td>@(notification.SentBy != null ? notification.SentBy.UserFName + " " + notification.SentBy.UserLName : "Sistem")</td>
                 <td>@notification.Message</td>
                 <td>@notification.CreatedAt.ToShortDateString()</td>
-                <td>@(notification.IsRead == true ? "Okundu" : "Okunmadı")</td>
+                <td>@(notification.IsRead.HasValue && notification.IsRead.Value ? "Okundu" : "Okunmadı")</td>
                 <td>
-                    @if (notification.IsRead == false)
+                    @if (!notification.IsRead.HasValue || !notification.IsRead.Value)
                     {
                         <a asp-action="MarkAsRead" asp-route-id="@notification.NotificationId" class="btn btn-primary btn-sm">Okundu</a>
                     }

@@ -23,7 +23,7 @@ namespace ProjeTakip.Models
 		public int TeamMemberId { get; set; }
 
 		[ForeignKey("TaskId")]
-        public int TaskId { get; set; }
+        public int? TaskId { get; set; }
 
 		[ForeignKey("ProjectId")]
         public int ProjectId { get; set; }

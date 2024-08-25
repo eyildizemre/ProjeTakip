@@ -24,12 +24,15 @@ namespace ProjeTakip.DataAccess.Repository
 			var objFromDb = _context.Notifications.FirstOrDefault(n => n.NotificationId == notification.NotificationId);
 			if (objFromDb != null)
 			{
-				objFromDb.CommentedById = notification.CommentedById;
-                objFromDb.CommentedAtId = notification.CommentedAtId;
-                objFromDb.Message = notification.Message;
+				objFromDb.SentById = notification.SentById;
+				objFromDb.ReceivedById = notification.ReceivedById;
+				objFromDb.Subject = notification.Subject;
+				objFromDb.Message = notification.Message;
 				objFromDb.CreatedAt = notification.CreatedAt;
 				objFromDb.IsRead = notification.IsRead;
-			}
+				objFromDb.TaskId = notification.TaskId;
+				objFromDb.ProjectId = notification.ProjectId;
+            }
 		}
 	}
 }
