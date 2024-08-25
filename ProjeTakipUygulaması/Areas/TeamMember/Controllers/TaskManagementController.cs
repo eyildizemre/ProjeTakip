@@ -110,9 +110,11 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
                 _unitOfWork.Tasks.Update(taskFromDb);
                 _unitOfWork.SaveChanges();
 
+                TempData["Success"] = "Görev başarıyla gönderildi, onay bekleniyor.";
                 return RedirectToAction(nameof(Index));
             }
 
+            TempData["Error"] = "Görev gönderilirken bir hata oluştu. Lütfen tekrar deneyin.";
             return View(taskVM);
         }
 
@@ -123,6 +125,7 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
             if (string.IsNullOrEmpty(gitHubLink))
             {
                 ModelState.AddModelError("GitHubLink", "Lütfen GitHub Push linkini ekleyiniz.");
+                TempData["Error"] = "GitHub Push linki boş bırakılamaz.";
                 return RedirectToAction("Details", new { id = taskId });
             }
 
@@ -130,6 +133,7 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
 
             if (taskFromDb == null)
             {
+                TempData["Error"] = "Görev bulunamadı.";
                 return NotFound();
             }
 
@@ -137,6 +141,7 @@ namespace ProjeTakipUygulaması.Areas.TeamMember.Controllers
             _unitOfWork.Tasks.Update(taskFromDb);
             _unitOfWork.SaveChanges();
 
+            TempData["Success"] = "GitHub Push linki başarıyla güncellendi.";
             return RedirectToAction("Details", new { id = taskId });
         }
 

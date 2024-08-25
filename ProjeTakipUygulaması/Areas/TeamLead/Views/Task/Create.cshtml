@@ -121,6 +121,14 @@
                     userDropdown.disabled = true;
                 }
             });
+
+            tinymce.init({
+                selector: 'textarea',  // Tüm textarea elementlerine TinyMCE uygular
+                plugins: 'lists link image preview',
+                toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                menubar: false,
+                branding: false
+            });
         });
     </script>
     @{

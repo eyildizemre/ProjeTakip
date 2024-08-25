@@ -108,7 +108,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
                 _unitOfWork.Tasks.Add(task);
                 await _unitOfWork.SaveChangesAsync();
-
+                TempData["Success"] = "Görev başarıyla eklendi!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -131,7 +131,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 Text = s.StatusName,
                 Value = s.StatusId.ToString()
             }).ToList();
-
+            TempData["error"] = "Görev eklenirken bir hata oluştu!";
             return View(model);
         }
 
@@ -211,6 +211,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 _unitOfWork.Tasks.Update(task);
                 await _unitOfWork.SaveChangesAsync();
 
+                TempData["Success"] = "Görev başarıyla güncellendi!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -235,6 +236,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 Selected = (model.TaskStatusId == s.StatusId)
             }).ToList();
 
+            TempData["error"] = "Görev güncellenirken bir hata oluştu!";
             return View(model);
         }
 
@@ -282,6 +284,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 task.Enabled = false;
                 _unitOfWork.Tasks.Update(task);
                 await _unitOfWork.SaveChangesAsync();
+                TempData["Success"] = "Görev başarıyla silindi!";
             }
 
             return RedirectToAction(nameof(Index));
@@ -381,6 +384,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             _unitOfWork.Tasks.Update(taskFromDb);
             _unitOfWork.SaveChanges();
 
+            TempData["Success"] = "Görev başarıyla onaylandı!";
             return RedirectToAction("Index");
         }
 
@@ -438,6 +442,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             _unitOfWork.Tasks.Update(taskFromDb);
             _unitOfWork.SaveChanges();
 
+            TempData["Success"] = "Görev başarıyla reddedildi!";
             return RedirectToAction("Index");
         }
 

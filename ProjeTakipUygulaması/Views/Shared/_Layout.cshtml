@@ -12,6 +12,7 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="~/css/calendar.css" />
     <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 </head>
 <body>
     <header>
@@ -36,7 +37,7 @@
                 links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
                 ("Ana Sayfa", "Admin", "Index", "Admin"),
-                ("Profil Yönetimi", "Account", "Index", ""),
+                ("Profil Yönetimi", "Profile", "Index", ""),
                 ("Kullanıcı Denetimi", "User", "AllUsers", "Admin"),
                 ("Kullanıcı Ekle", "User", "AddUser", "Admin"),
                 ("Ekip", "Team", "Index", "Admin"),
@@ -51,7 +52,7 @@
                 links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
                 ("Ana Sayfa", "DashBoard", "Index", "TeamLead"),
-                ("Profil Yönetimi", "Account", "Index", ""),
+                ("Profil Yönetimi", "Profile", "Index", ""),
                 ("Projeler", "Project", "Index", "TeamLead"),
                 ("Görevler", "Task", "Index", "TeamLead"),
                 ("Bildirimler", "Notification", "Index", "TeamLead"),
@@ -64,8 +65,8 @@
                 links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
                 ("Ana Sayfa", "Dashboard", "Index", "TeamMember"),
-                ("Profil Yönetimi", "Account", "Index", ""),
-                // ("Projeler", "Project", "Index", "TeamMember"),  // İsteğe bağlı olarak kaldırılabilir
+                ("Profil Yönetimi", "Profile", "Index", ""),
+                // ("Projeler", "Project", "Index", "TeamMember"),
                 ("Görevler", "TaskManagement", "Index", "TeamMember"),
                 ("Bildirimler", "Notification", "Index", "TeamMember"),
                 ("Çıkış", "Account", "Logout", "")
@@ -99,11 +100,48 @@
     </footer>
     <script src="~/js/scripts.js"></script>
     <script src="~/js/calendar.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/wfkxiwmjo83b0u316rfx66aoh47bq4cle93drhh82hxb09b4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <partial name="_ValidationScriptsPartial" />
     @await RenderSectionAsync("Scripts", required: false)
+        <script type="text/javascript">
+            $(document).ready(function () {
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                            toastr.success('@TempData["SuccessMessage"]');
+                </text>
+                ;
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                            toastr.error('@TempData["ErrorMessage"]');
+                </text>
+                ;
+            }
+
+            @if (TempData["WarningMessage"] != null)
+            {
+                <text>
+                            toastr.warning('@TempData["WarningMessage"]');
+                </text>
+                ;
+            }
+
+            @if (TempData["InfoMessage"] != null)
+            {
+                <text>
+                            toastr.info('@TempData["InfoMessage"]');
+                </text>
+                ;
+            }
+            });
+        </script>
 </body>
 </html>

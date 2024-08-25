@@ -1,0 +1,30 @@
+﻿@model ProjeTakip.Models.ViewModels.ProfileVM
+
+<h2>Profil Bilgileri</h2>
+
+<div class="form-group">
+    <label for="UserFName">Ad </label>
+    @Model.UserFName
+</div>
+
+<div class="form-group">
+    <label for="UserLName">Soyad </label>
+    @Model.UserLName
+</div>
+
+<div class="form-group">
+    <label for="Email">E-posta </label>
+    <p>@Model.Email
+</div>
+
+<div class="form-group">
+    <label for="GitHubProfile">GitHub Profili </label>
+    @Model.GitHubProfile
+</div>
+
+<div class="form-group">
+    <a asp-action="Edit" class="btn btn-primary">Kullanıcı Bilgilerini Düzenle</a>
+    <a asp-action="Password" class="btn btn-secondary">Şifreyi Değiştir</a>
+</div>
+
+<a class="btn btn-outline-warning mt-3" onclick="window.history.back()">Geri</a>

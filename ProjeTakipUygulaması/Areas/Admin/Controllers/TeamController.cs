@@ -68,6 +68,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                         Value = u.UserId.ToString()
                     }).ToList();
 
+                TempData["Error"] = "Lütfen formu doğru şekilde doldurun.";
                 return View(teamVM);
             }
 
@@ -107,10 +108,12 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     }
 
                     _unitOfWork.SaveChanges();
+                    TempData["Success"] = "Ekip başarıyla oluşturuldu.";
                 }
                 else
                 {
                     ModelState.AddModelError("", "Herhangi bir kullanıcı seçilmedi.");
+                    TempData["Error"] = "Herhangi bir kullanıcı seçilmedi.";
                     return View(teamVM);
                 }
 
@@ -229,6 +232,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 _unitOfWork.Teams.Update(teamFromDb);
                 _unitOfWork.SaveChanges();
 
+                TempData["Success"] = "Ekip başarıyla güncellendi.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -272,6 +276,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             _unitOfWork.Teams.Update(teamFromDb);
             _unitOfWork.SaveChanges();
 
+            TempData["Success"] = "Ekip başarıyla silindi.";
             return RedirectToAction(nameof(Index));
         }
 

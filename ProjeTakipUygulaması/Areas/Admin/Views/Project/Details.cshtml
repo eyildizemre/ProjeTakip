@@ -5,7 +5,7 @@
 @if (Model != null) {
 <div>
     <h3>@Model.ProjectName</h3>
-    <p><strong>Açıklama:</strong> @Model.ProjectDescription</p>
+        <p><strong>Açıklama:</strong><div>@Html.Raw(Model.ProjectDescription)</div>
     <p><strong>Ekip:</strong> @Model.TeamName</p>
     <p><strong>Ekip Lideri:</strong> @Model.TeamLeadName</p>
     <p><strong>Başlangıç Tarihi:</strong> @Model.StartDate.ToString("dd.MM.yyyy")</p>
@@ -21,3 +21,15 @@ else {
     <p>Proje bulunamadı.</p>
 }
 <a asp-action="Index" class="btn btn-primary">Geri Dön</a>
+
+@section Scripts {
+    <script>
+        tinymce.init({
+            selector: 'textarea',  // Tüm textarea elementlerine TinyMCE uygular
+            plugins: 'lists link image preview',
+            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            menubar: false,
+            branding: false
+        });
+    </script>
+}

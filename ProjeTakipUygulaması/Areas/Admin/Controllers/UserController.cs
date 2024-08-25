@@ -50,7 +50,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddUser(UserVM model)
         {
             model.RoleId = Convert.ToInt32(Request.Form["RoleId"]);
@@ -84,6 +84,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 _unitOfWork.UserRoles.Add(userRole);
                 await _unitOfWork.SaveChangesAsync();
 
+                TempData["success"] = "Kullanıcı başarıyla eklendi!";
                 return RedirectToAction("AllUsers", "User", new { area = "Admin" });
             }
 
@@ -121,7 +122,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUser(UserVM model)
         {
             if (ModelState.IsValid)
@@ -197,7 +198,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         }
 
         [HttpPost, ActionName("DeleteUser")]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUserPOST(int id)
         {
             var user = _unitOfWork.Users.GetFirstOrDefault(u => u.UserId == id);
@@ -217,6 +218,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             }
 
             await _unitOfWork.SaveChangesAsync();
+            TempData["success"] = "Kullanıcı başarıyla silindi!";
             return RedirectToAction("Index", "Admin");
         }
     }

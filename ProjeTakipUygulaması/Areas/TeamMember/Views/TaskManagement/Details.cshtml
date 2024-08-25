@@ -46,7 +46,7 @@
                 else
                 {
                     <div class="col-12 mt-3">
-                        <TextArea disabled rows="4" cols="50" style="width: fit-content">@Model.CommentText</TextArea>
+                        <div>@Html.Raw(Model.CommentText)</div>
                     </div>
                 }
             </div>
@@ -56,3 +56,15 @@
 </div>
 
 <a asp-action="Index" class="btn btn-secondary">Geri</a>
+
+@section Scripts {
+    <script>
+        tinymce.init({
+            selector: 'textarea',  // Tüm textarea elementlerine TinyMCE uygular
+            plugins: 'lists link image preview',
+            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            menubar: false,
+            branding: false
+        });
+    </script>
+}

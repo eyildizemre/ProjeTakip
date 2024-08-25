@@ -51,3 +51,16 @@
         <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        tinymce.init({
+            selector: 'textarea',  // Tüm textarea elementlerine TinyMCE uygular
+            readonly: 1,
+            plugins: 'lists link image preview',
+            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            menubar: false,
+            branding: false
+        });
+    </script>
+}

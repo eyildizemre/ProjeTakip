@@ -175,6 +175,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 
                     await _unitOfWork.SaveChangesAsync();
 
+                    TempData["Success"] = "Proje başarıyla oluşturuldu.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -184,6 +185,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     Value = t.TeamId.ToString()
                 }).ToList();
 
+                TempData["ErrorMessage"] = "Proje oluşturulamadı. Lütfen tekrar deneyin.";
                 return View(model);
             }
             catch (Exception ex)
@@ -274,6 +276,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     }
 
                     await _unitOfWork.SaveChangesAsync();
+                    TempData["Success"] = "Proje başarıyla güncellendi.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -292,6 +295,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                         Selected = (model.TeamLeadId == u.UserId)
                     });
 
+                TempData["ErrorMessage"] = "Proje güncellenemedi. Lütfen tekrar deneyin.";
                 return View(model);
             }
             catch (Exception ex)
@@ -326,6 +330,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
             _unitOfWork.Projects.Update(project);
             await _unitOfWork.SaveChangesAsync();
 
+            TempData["Success"] = "Proje başarıyla silindi.";
             return RedirectToAction(nameof(Index));
         }
 
