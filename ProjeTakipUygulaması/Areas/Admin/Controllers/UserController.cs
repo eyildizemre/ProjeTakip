@@ -84,7 +84,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 _unitOfWork.UserRoles.Add(userRole);
                 await _unitOfWork.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Admin", new { area = "Admin" });
+                return RedirectToAction("AllUsers", "User", new { area = "Admin" });
             }
 
             model.Roles = _unitOfWork.Roles.GetAll().Select(r => new SelectListItem
@@ -156,7 +156,7 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 await _unitOfWork.SaveChangesAsync();
 
                 TempData["success"] = "Kullanıcı başarıyla güncellendi!";
-                return RedirectToAction("Index", "Admin");
+                return RedirectToAction("AllUsers", "User", new { area = "Admin" });
             }
 
             model.Roles = _unitOfWork.Roles.GetAll().Select(r => new SelectListItem

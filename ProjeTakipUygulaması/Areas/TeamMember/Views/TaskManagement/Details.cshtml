@@ -1,0 +1,35 @@
+﻿@model ProjeTakip.Models.ViewModels.TaskVM
+
+<h2>@Model.TaskName Detayları</h2>
+
+<div>
+    <h4>Görev Bilgileri</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Görev İsmi</dt>
+        <dd class="col-sm-10">@Model.TaskName</dd>
+
+        <dt class="col-sm-2">Görev Açıklaması</dt>
+        <dd class="col-sm-10">@Model.TaskDescription</dd>
+
+        <dt class="col-sm-2">Başlangıç Tarihi</dt>
+        <dd class="col-sm-10">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Bitiş Tarihi</dt>
+        <dd class="col-sm-10">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Görev Durumu</dt>
+        <dd class="col-sm-10">@Model.TaskStatusName</dd>
+
+        <dt class="col-sm-2">GitHub Push Linki</dt>
+        <dd class="col-sm-10">
+            <form asp-action="UpdateGitHubLink" method="post">
+                <input type="hidden" name="taskId" value="@Model.TaskId" />
+                <input type="text" name="gitHubLink" value="@Model.GitHubPush" class="form-control" />
+                <input type="submit" value="Güncelle" class="btn btn-primary mt-2" />
+            </form>
+        </dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Geri</a>

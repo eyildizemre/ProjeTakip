@@ -36,31 +36,35 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
 // Enable session management
 app.UseSession();
-
+app.UseRouting();
 // Authorization iþlemleri session'dan sonra kullanýlmalý.
 app.UseAuthorization();
+app.UseAuthentication();
 
 // Middleware to check if the user is logged in
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value.ToLower();
+    var sessionUserId = context.Session.GetString("UserId");
+    var sessionRoleId = context.Session.GetInt32("RoleId");
+
+    // Oturum bilgilerini kontrol edelim
+    Console.WriteLine($"Path: {path}, Method: {context.Request.Method}, Session UserId: {sessionUserId}, Session RoleId: {sessionRoleId}");
 
     if (!path.Contains("/account/login") &&
-        string.IsNullOrEmpty(context.Session.GetString("UserId")) &&
+        string.IsNullOrEmpty(sessionUserId) &&
         context.Request.Method.ToLower() != "post")
     {
         context.Response.Redirect("/Account/Login");
         return;
     }
     else if (path.Contains("/account/login") &&
-             !string.IsNullOrEmpty(context.Session.GetString("UserId")) &&
+             !string.IsNullOrEmpty(sessionUserId) &&
              context.Request.Method.ToLower() == "post")
     {
-        var roleId = context.Session.GetInt32("RoleId");
+        var roleId = sessionRoleId;
 
         if (roleId == 1)
         {
@@ -68,11 +72,11 @@ app.Use(async (context, next) =>
         }
         else if (roleId == 2)
         {
-            context.Response.Redirect("/TeamLead/");
+            context.Response.Redirect("/TeamLead");
         }
         else if (roleId == 3)
         {
-            context.Response.Redirect("/TeamMember/");
+            context.Response.Redirect("/TeamMember");
         }
         return;
     }

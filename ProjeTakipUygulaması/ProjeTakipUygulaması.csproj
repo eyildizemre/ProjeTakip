@@ -26,9 +26,4 @@
     <ProjectReference Include="..\ProjeTakip.DataAccess\ProjeTakip.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\TeamMember\Controllers\" />
-    <Folder Include="Areas\TeamMember\Views\" />
-  </ItemGroup>
-
 </Project>

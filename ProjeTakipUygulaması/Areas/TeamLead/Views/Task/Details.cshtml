@@ -19,7 +19,7 @@
 
     <div class="detail-item">
         <strong>Atanan Kullanıcı:</strong>
-        <p>@Model.UserFullName</p>
+        <p>@Model.AssignedUserName</p>
     </div>
 
     <div class="detail-item">
@@ -42,12 +42,26 @@
         <p>@Model.EndDate.ToShortDateString()</p>
     </div>
 
-    <div class="detail-item">
-        <strong>GitHub Push URL:</strong>
-        <p>@Model.GitHubPush</p>
-    </div>
+    <!-- Onayla ve Reddet butonları sadece "Onay Bekliyor" durumunda görünür -->
+    @if (Model.OnayDurumuId == 1)
+    {
+        <div class="detail-item">
+            <strong>GitHub Push URL:</strong>
+            <p>@Model.GitHubPush</p>
+        </div>
+        <div class="form-group">
+            <form asp-action="Approve" method="post" style="display:inline;">
+                <input type="hidden" asp-for="TaskId" />
+                <button type="submit" class="btn btn-success">Onayla</button>
+            </form>
+            <form asp-action="Reject" method="post" style="display:inline;">
+                <input type="hidden" asp-for="TaskId" />
+                <button type="submit" class="btn btn-danger">Reddet</button>
+            </form>
+        </div>
+    }
 
-    <div class="form-group">
+    <div class="form-group mt-3">
         <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
     </div>
 </div>
@@ -63,17 +77,17 @@
         margin-bottom: 15px;
     }
 
-    .detail-item strong {
-        display: block;
-        margin-bottom: 5px;
-    }
+        .detail-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-    .detail-item p {
-        margin: 0;
-        padding: 8px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        width: 100%;
-    }
+        .detail-item p {
+            margin: 0;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
 </style>

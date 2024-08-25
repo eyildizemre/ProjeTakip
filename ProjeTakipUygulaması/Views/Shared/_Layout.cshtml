@@ -38,6 +38,7 @@
                 ("Ana Sayfa", "Admin", "Index", "Admin"),
                 ("Profil Yönetimi", "Account", "Index", ""),
                 ("Kullanıcı Denetimi", "User", "AllUsers", "Admin"),
+                ("Kullanıcı Ekle", "User", "AddUser", "Admin"),
                 ("Ekip", "Team", "Index", "Admin"),
                 ("Proje", "Project", "Index", "Admin"),
                 ("Bildirimler", "Notification", "Index", "Admin"),
@@ -62,10 +63,10 @@
                 roleName = "Ekip Üyesi";
                 links = new List<(string LinkText, string Controller, string Action, string Area)>
                 {
-                ("Ana Sayfa", "Home", "Index", "TeamMember"),
+                ("Ana Sayfa", "Dashboard", "Index", "TeamMember"),
                 ("Profil Yönetimi", "Account", "Index", ""),
-                ("Projeler", "Project", "Index", "TeamMember"),  // İsteğe bağlı olarak kaldırılabilir
-                ("Görevler", "Task", "Index", "TeamMember"),
+                // ("Projeler", "Project", "Index", "TeamMember"),  // İsteğe bağlı olarak kaldırılabilir
+                ("Görevler", "TaskManagement", "Index", "TeamMember"),
                 ("Bildirimler", "Notification", "Index", "TeamMember"),
                 ("Çıkış", "Account", "Logout", "")
                 };

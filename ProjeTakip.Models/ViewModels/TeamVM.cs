@@ -21,6 +21,7 @@ namespace ProjeTakip.Models.ViewModels
             UserTeams = new List<UserTeam>();
         }
 
+        [ValidateNever]
         public List<CalendarEvent> CalendarEvents { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             var projects = _unitOfWork.Projects.GetAll(p => p.TeamLeadId == userId && p.Enabled, includeProperties: "Team,Status");
 
             // TeamLead'e atanmış görevleri al
-            var tasks = _unitOfWork.Tasks.GetAll(t => t.UserId == userId && t.Enabled, includeProperties: "Status");
+            var tasks = _unitOfWork.Tasks.GetAll(t => t.TeamLeadId == userId && t.Enabled, includeProperties: "Status");
 
             // CalendarEvent listesi oluştur
             var calendarEvents = new List<CalendarEvent>();

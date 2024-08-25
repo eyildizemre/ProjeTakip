@@ -18,7 +18,7 @@
         <dd>
             @foreach (var userTeam in Model.UserTeams)
             {
-                if (userTeam.Enabled && userTeam.User != null && userTeam.Role != null)
+                if (userTeam.Enabled && userTeam.User != null && userTeam.Role == null && userTeam.RoleId == 3)
                 {
                     <div>@userTeam.User.UserFName @userTeam.User.UserLName (@userTeam.Role.RoleName)</div>
                 }

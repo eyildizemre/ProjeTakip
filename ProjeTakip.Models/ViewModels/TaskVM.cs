@@ -23,13 +23,14 @@ namespace ProjeTakip.Models.ViewModels
 
         [Required(ErrorMessage = "Bir kullanıcı seçilmelidir.")]
         [Display(Name = "Atanan Kullanıcı")]
+        [ValidateNever]
         public int? UserId { get; set; }
 
         public IEnumerable<SelectListItem> Users { get; set; } = new List<SelectListItem>();
 
         [ValidateNever]
         [Display(Name = "Atanan Kullanıcı")]
-        public string UserFullName { get; set; } // Yeni özellik
+        public string AssignedUserName { get; set; } // Atanan Kullanıcının adı ve soyadı
 
         [Required(ErrorMessage = "Bir proje seçilmelidir.")]
         [Display(Name = "Proje")]
@@ -39,7 +40,7 @@ namespace ProjeTakip.Models.ViewModels
 
         [ValidateNever]
         [Display(Name = "Proje")]
-        public string ProjectName { get; set; } // Yeni özellik
+        public string ProjectName { get; set; } // Proje ismi
 
         [Required(ErrorMessage = "Bir durum seçilmelidir.")]
         [Display(Name = "Görev Durumu")]
@@ -47,9 +48,24 @@ namespace ProjeTakip.Models.ViewModels
 
         public IEnumerable<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
 
+        [Display(Name = "Yorum")]
+        public string? CommentText { get; set; } // Yorum için TextArea alanı
+
         [ValidateNever]
         [Display(Name = "Görev Durumu")]
-        public string TaskStatusName { get; set; } // Yeni özellik
+        public string TaskStatusName { get; set; } // Görev Durumu ismi
+
+        [ValidateNever]
+        [Display(Name = "Onay Durumu")]
+        public int OnayDurumuId { get; set; }  // Onay Durumu ID
+
+        [ValidateNever]
+        [Display(Name = "Onay Durumu")]
+        public string OnayDurumuAdi { get; set; }  // Onay Durumu ismi
+
+        [ValidateNever]
+        [Display(Name = "Görev Veren")]
+        public string TeamLeadName { get; set; } // Görevi veren TeamLead'in adı ve soyadı
 
         [Display(Name = "Başlangıç Tarihi")]
         [DataType(DataType.Date)]

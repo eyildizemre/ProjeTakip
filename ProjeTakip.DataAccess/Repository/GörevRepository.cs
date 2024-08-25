@@ -26,13 +26,15 @@ namespace ProjeTakip.DataAccess.Repository
 			{
 				objFromDb.TaskName = görev.TaskName;
 				objFromDb.TaskDescription = görev.TaskDescription;
-				objFromDb.UserId = görev.UserId;
-				objFromDb.StartDate = görev.StartDate;
+				objFromDb.TeamLeadId = görev.TeamLeadId;
+                objFromDb.AssignedUserId = görev.AssignedUserId;
+                objFromDb.StartDate = görev.StartDate;
 				objFromDb.EndDate = görev.EndDate;
 				objFromDb.GitHubPush = görev.GitHubPush;
 				objFromDb.TaskStatusId = görev.TaskStatusId;
 				objFromDb.TaskCommentId = görev.TaskCommentId;
 				objFromDb.ProjectId = görev.ProjectId;
+                objFromDb.OnayDurumu = görev.OnayDurumu;
                 objFromDb.Enabled = görev.Enabled;
 			}
 		}

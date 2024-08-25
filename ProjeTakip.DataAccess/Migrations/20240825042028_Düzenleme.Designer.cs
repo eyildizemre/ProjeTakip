@@ -12,8 +12,8 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240823204419_Tablolar")]
-    partial class Tablolar
+    [Migration("20240825042028_Düzenleme")]
+    partial class Düzenleme
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,7 +76,7 @@ namespace ProjeTakip.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
 
-                    b.Property<int>("AssignedUserUserId")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
                     b.Property<int?>("CommentId")
@@ -91,6 +91,9 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<string>("GitHubPush")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("OnayDurumuId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -112,14 +115,19 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TeamLeadId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("TaskId");
 
-                    b.HasIndex("AssignedUserUserId");
+                    b.HasIndex("AssignedUserId");
 
                     b.HasIndex("CommentId");
+
+                    b.HasIndex("OnayDurumuId");
 
                     b.HasIndex("ProjectId");
 
@@ -128,6 +136,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasFilter("[TaskCommentId] IS NOT NULL");
 
                     b.HasIndex("TaskStatusId");
+
+                    b.HasIndex("TeamLeadId");
 
                     b.HasIndex("UserId");
 
@@ -165,6 +175,41 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("CommentedById");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("ProjeTakip.Models.OnayDurumu", b =>
+                {
+                    b.Property<int>("OnayDurumuId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OnayDurumuId"));
+
+                    b.Property<string>("OnayDurumuAdi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("OnayDurumuId");
+
+                    b.ToTable("OnayDurumu");
+
+                    b.HasData(
+                        new
+                        {
+                            OnayDurumuId = 1,
+                            OnayDurumuAdi = "Onay Bekliyor"
+                        },
+                        new
+                        {
+                            OnayDurumuId = 2,
+                            OnayDurumuAdi = "Onaylandı"
+                        },
+                        new
+                        {
+                            OnayDurumuId = 3,
+                            OnayDurumuAdi = "Reddedildi"
+                        });
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
@@ -329,15 +374,6 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasIndex("TeamLeadId");
 
                     b.ToTable("Teams");
-
-                    b.HasData(
-                        new
-                        {
-                            TeamId = 2,
-                            Enabled = true,
-                            TeamLeadId = 2,
-                            TeamName = ".NET Core MVC"
-                        });
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.User", b =>
@@ -390,20 +426,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.R0rn9PYG3WNk71mUKT5luGzyanFd8dC",
+                            UserHash = "$2a$11$CW1J0a/by7LsQMhv1111.e2oWHyCIa2yFec7nuNmbMz/5C/BWjgn6",
                             UserLName = "User",
-                            UserSalt = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6."
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Enabled = true,
-                            GitHubProfile = "https://github.com/alperen",
-                            UserEmail = "alperen@gmail.com",
-                            UserFName = "Alperen",
-                            UserHash = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.Ty2e/G7OER/SJ6ol0iDo1lQ4OySwMhi",
-                            UserLName = "Ekici",
-                            UserSalt = "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6."
+                            UserSalt = "$2a$11$CW1J0a/by7LsQMhv1111.e"
                         });
                 });
 
@@ -439,13 +464,6 @@ namespace ProjeTakip.DataAccess.Migrations
                             Enabled = true,
                             RoleId = 1,
                             UserId = 1
-                        },
-                        new
-                        {
-                            UserRoleId = 2,
-                            Enabled = true,
-                            RoleId = 2,
-                            UserId = 2
                         });
                 });
 
@@ -522,14 +540,18 @@ namespace ProjeTakip.DataAccess.Migrations
             modelBuilder.Entity("ProjeTakip.Models.Görev", b =>
                 {
                     b.HasOne("ProjeTakip.Models.User", "AssignedUser")
-                        .WithMany("Tasks")
-                        .HasForeignKey("AssignedUserUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("AssignedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ProjeTakip.Models.Comment", null)
                         .WithMany("Tasks")
                         .HasForeignKey("CommentId");
+
+                    b.HasOne("ProjeTakip.Models.OnayDurumu", "OnayDurumu")
+                        .WithMany()
+                        .HasForeignKey("OnayDurumuId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ProjeTakip.Models.Project", "Project")
                         .WithMany("Tasks")
@@ -548,20 +570,26 @@ namespace ProjeTakip.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjeTakip.Models.User", "User")
+                    b.HasOne("ProjeTakip.Models.User", "TeamLead")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ProjeTakip.Models.User", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("AssignedUser");
 
                     b.Navigation("Comment");
 
+                    b.Navigation("OnayDurumu");
+
                     b.Navigation("Project");
 
                     b.Navigation("Status");
 
-                    b.Navigation("User");
+                    b.Navigation("TeamLead");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Notification", b =>

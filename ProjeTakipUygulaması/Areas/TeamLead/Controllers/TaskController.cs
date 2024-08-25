@@ -20,20 +20,22 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var tasks = _unitOfWork.Tasks.GetAll(t => t.Enabled, includeProperties: "AssignedUser,Project,Status").ToList();
+            var tasks = _unitOfWork.Tasks.GetAll(t => t.Enabled, includeProperties: "AssignedUser,Project,Status,OnayDurumu").ToList();
 
             var model = tasks.Select(t => new TaskVM
             {
                 TaskId = t.TaskId,
                 TaskName = t.TaskName,
                 TaskDescription = t.TaskDescription,
-                UserId = t.UserId,
-                UserFullName = t.AssignedUser != null ? t.AssignedUser.UserFName + " " + t.AssignedUser.UserLName : "Atanmamış",
+                UserId = t.TeamLeadId,
+                AssignedUserName = t.AssignedUser != null ? t.AssignedUser.UserFName + " " + t.AssignedUser.UserLName : "Atanmamış",
                 ProjectId = t.ProjectId,
                 ProjectName = t.Project.ProjectName,
                 StartDate = t.StartDate,
                 EndDate = t.EndDate,
-                TaskStatusName = t.Status.StatusName
+                TaskStatusName = t.Status.StatusName,
+                OnayDurumuId = t.OnayDurumu?.OnayDurumuId ?? 4,
+                OnayDurumuAdi = t.OnayDurumu?.OnayDurumuAdi ?? "Onay Durumu Belirtilmemiş",
             }).ToList();
 
             return View(model);
@@ -73,11 +75,12 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 {
                     TaskName = model.TaskName,
                     TaskDescription = model.TaskDescription,
-                    UserId = model.UserId,
+                    TeamLeadId = model.UserId,
                     ProjectId = model.ProjectId,
                     StartDate = model.StartDate,
                     EndDate = model.EndDate,
                     TaskStatusId = 2,
+                    OnayDurumuId = 4,
                     Enabled = true
                 };
 
@@ -125,7 +128,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 TaskId = task.TaskId,
                 TaskName = task.TaskName,
                 TaskDescription = task.TaskDescription,
-                UserId = task.UserId,
+                UserId = task.TeamLeadId,
                 ProjectId = task.ProjectId,
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,
@@ -135,7 +138,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 {
                     Text = u.UserFName + " " + u.UserLName,
                     Value = u.UserId.ToString(),
-                    Selected = (task.UserId == u.UserId)
+                    Selected = (task.TeamLeadId == u.UserId)
                 }).ToList(),
                 Projects = _unitOfWork.Projects.GetAll(p => p.Enabled).Select(p => new SelectListItem
                 {
@@ -168,7 +171,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
                 task.TaskName = model.TaskName;
                 task.TaskDescription = model.TaskDescription;
-                task.UserId = model.UserId;
+                task.TeamLeadId = model.UserId;
                 task.ProjectId = model.ProjectId;
                 task.StartDate = model.StartDate;
                 task.EndDate = model.EndDate;
@@ -219,7 +222,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 TaskId = task.TaskId,
                 TaskName = task.TaskName,
                 TaskDescription = task.TaskDescription,
-                UserFullName = task.AssignedUser?.UserFName + " " + task.AssignedUser?.UserLName,
+                AssignedUserName = task.AssignedUser?.UserFName + " " + task.AssignedUser?.UserLName,
                 ProjectName = task.Project?.ProjectName,
                 TaskStatusName = task.Status?.StatusName,
                 StartDate = task.StartDate,
@@ -248,7 +251,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
         [HttpGet]
         public IActionResult Details(int id)
         {
-            var task = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == id, includeProperties: "AssignedUser,Project,Status");
+            var task = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == id, includeProperties: "AssignedUser,Project,Status,OnayDurumu");
             if (task == null)
             {
                 return NotFound();
@@ -259,15 +262,57 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
                 TaskId = task.TaskId,
                 TaskName = task.TaskName,
                 TaskDescription = task.TaskDescription,
-                UserFullName = task.AssignedUser?.UserFName + " " + task.AssignedUser?.UserLName,
+                AssignedUserName = task.AssignedUser?.UserFName + " " + task.AssignedUser?.UserLName,
                 ProjectName = task.Project?.ProjectName,
                 TaskStatusName = task.Status?.StatusName,
+                OnayDurumuId = task.OnayDurumuId ?? 0, // Eğer OnayDurumuId null ise 0 atanır
+                OnayDurumuAdi = task.OnayDurumu != null ? task.OnayDurumu.OnayDurumuAdi : "Onay Durumu Belirtilmedi",
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,
                 GitHubPush = task.GitHubPush
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Approve(int taskId)
+        {
+            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == taskId);
+
+            if (taskFromDb == null)
+            {
+                return NotFound();
+            }
+
+            taskFromDb.TaskStatusId = 3; // Task'i "Tamamlandı" durumuna getir
+            taskFromDb.OnayDurumuId = 2; // Onay Durumu "Onaylandı" olarak güncelle
+
+            _unitOfWork.Tasks.Update(taskFromDb);
+            _unitOfWork.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Reject(int taskId)
+        {
+            var taskFromDb = _unitOfWork.Tasks.GetFirstOrDefault(t => t.TaskId == taskId);
+
+            if (taskFromDb == null)
+            {
+                return NotFound();
+            }
+
+            taskFromDb.TaskStatusId = 1; // Task'i "Tamamlanmadı" durumuna getir
+            taskFromDb.OnayDurumuId = 3; // Onay Durumu "Reddedildi" olarak güncelle
+
+            _unitOfWork.Tasks.Update(taskFromDb);
+            _unitOfWork.SaveChanges();
+
+            return RedirectToAction("Index");
         }
     }
 }

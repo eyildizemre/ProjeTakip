@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ProjeTakip.Models.ViewModels.TaskVM>
+
+<h2>Görevlerim</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Görev İsmi</th>
+            <th>Durum</th>
+            <th>Başlama Tarihi</th>
+            <th>Bitiş Tarihi</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td class="btn-outline-light">@Html.ActionLink(task.TaskName, "Details", new { id = task.TaskId })</td>
+                @if (task.OnayDurumuId == 2)
+                {
+                    <td><span class="bg-success">@task.OnayDurumuAdi</span></td>
+                }
+                else if (task.OnayDurumuId == 1)
+                {
+                    <td><span class="bg-warning">@task.OnayDurumuAdi</span></td>
+                }
+                else if (task.OnayDurumuId == 3)
+                {
+                    <td><span class="bg-danger">@task.OnayDurumuAdi</span></td>
+                }
+                else if (task.OnayDurumuId == 4 && task.TaskStatusId == 2)
+                {
+                    <td><span class="bg-info">@task.TaskStatusName</span></td>
+                }
+                else
+                {
+                    <td><span class="bg-info">@task.TaskStatusName</span></td>
+                }
+                <td>@task.StartDate.ToString("yyyy-MM-dd")</td>
+                <td>@task.EndDate.ToString("yyyy-MM-dd")</td>
+                @if (task.OnayDurumuId == 4 || task.OnayDurumuId == 3)
+                {
+                    <td>
+                        @Html.ActionLink("Complete", "Complete", new { id = task.TaskId }, new { @class = "btn btn-success" })
+                    </td>
+                }
+                else if (task.OnayDurumuId == 2)
+                {
+                    <td></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

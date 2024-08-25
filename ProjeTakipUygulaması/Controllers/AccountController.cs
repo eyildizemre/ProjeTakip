@@ -34,10 +34,11 @@ namespace ProjeTakipUygulaması.Controllers
                 if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.UserHash))
                 {
                     HttpContext.Session.SetString("UserId", user.UserId.ToString());
+                    Console.WriteLine("UserId session'a yazıldı: " + HttpContext.Session.GetString("UserId"));
                     HttpContext.Session.SetString("UserFName", user.UserFName); // FirstName ekliyoruz
-
+                    Console.WriteLine("UserFName session'a yazıldı: " + HttpContext.Session.GetString("UserFName"));
                     var userRole = user.UserRoles?.FirstOrDefault();
-
+                    Console.WriteLine("RoleId: " + userRole.RoleId);
                     if (userRole != null)
                     {
                         HttpContext.Session.SetInt32("RoleId", userRole.RoleId);
@@ -52,7 +53,7 @@ namespace ProjeTakipUygulaması.Controllers
                         }
                         else if (userRole.RoleId == 3)
                         {
-                            return RedirectToAction("Index", "TeamMember", new { area = "TeamMember" });
+                            return RedirectToAction("Index", "Dashboard", new { area = "TeamMember" });
                         }
                     }
                     else

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjeTakip.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    partial class ProjeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240825031933_TablolarVeSeedData")]
+    partial class TablolarVeSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +92,7 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("OnayDurumuId")
+                    b.Property<int>("OnayDurumuId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProjectId")
@@ -206,11 +209,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         {
                             OnayDurumuId = 3,
                             OnayDurumuAdi = "Reddedildi"
-                        },
-                        new
-                        {
-                            OnayDurumuId = 4,
-                            OnayDurumuAdi = "Onay durumu yok"
                         });
                 });
 
@@ -428,9 +426,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$QiFjzoXGabcyb8YbDorn4e41LnxFwI0Te0ncNaT/tITlO9qWj2soC",
+                            UserHash = "$2a$11$6U7ROVnCWAjGs9chevycC.zMXlayMyqXOIZk86Q0SbUZcnUsC/JQe",
                             UserLName = "User",
-                            UserSalt = "$2a$11$QiFjzoXGabcyb8YbDorn4e"
+                            UserSalt = "$2a$11$6U7ROVnCWAjGs9chevycC."
                         });
                 });
 
@@ -553,7 +551,8 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.HasOne("ProjeTakip.Models.OnayDurumu", "OnayDurumu")
                         .WithMany()
                         .HasForeignKey("OnayDurumuId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("ProjeTakip.Models.Project", "Project")
                         .WithMany("Tasks")

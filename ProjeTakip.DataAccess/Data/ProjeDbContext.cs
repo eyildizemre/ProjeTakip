@@ -24,6 +24,7 @@ namespace ProjeTakip.DataAccess.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<OnayDurumu> OnayDurumu { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -123,7 +124,7 @@ namespace ProjeTakip.DataAccess.Data
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Tasks)
                 .WithOne(t => t.AssignedUser)
-                .HasForeignKey(t => t.UserId)
+                .HasForeignKey(t => t.TeamLeadId)
                 .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili görevler silinmez.
 
             // UserTeam tablosu ile diğer tablolar arasındaki ilişkiler
@@ -146,35 +147,53 @@ namespace ProjeTakip.DataAccess.Data
                 .OnDelete(DeleteBehavior.Restrict); // Rol silindiğinde UserTeam kayıtları silinmez.
 
             // Görev tablosu ile diğer tablolar arasındaki ilişkiler
+            // Görev ve Proje İlişkisi
             modelBuilder.Entity<Görev>()
-               .HasOne(g => g.Project)
-               .WithMany(p => p.Tasks) // Projede birden fazla görev olabilir
-               .HasForeignKey(g => g.ProjectId)
-               .OnDelete(DeleteBehavior.Cascade); // Proje silindiğinde ilişkili görevler de silinir
+                .HasOne(g => g.Project)
+                .WithMany(p => p.Tasks)
+                .HasForeignKey(g => g.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // Görev ve TeamLead (User) İlişkisi
             modelBuilder.Entity<Görev>()
-                .HasOne(g => g.User)
+                .HasOne(g => g.TeamLead)
                 .WithMany()
-                .HasForeignKey(g => g.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // User silindiğinde görev silinmez.
+                .HasForeignKey(g => g.TeamLeadId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Görev ve AssignedUser (User) İlişkisi
+            modelBuilder.Entity<Görev>()
+                .HasOne(g => g.AssignedUser)
+                .WithMany()
+                .HasForeignKey(g => g.AssignedUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Görev ve Status İlişkisi
             modelBuilder.Entity<Görev>()
                 .HasOne(g => g.Status)
                 .WithMany()
                 .HasForeignKey(g => g.TaskStatusId)
-                .OnDelete(DeleteBehavior.Restrict); // Status silindiğinde görev silinmez.
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Görev ve Comment İlişkisi
             modelBuilder.Entity<Görev>()
                 .HasOne(g => g.Comment)
                 .WithOne()
                 .HasForeignKey<Görev>(g => g.TaskCommentId)
-                .OnDelete(DeleteBehavior.Restrict); // Comment silindiğinde görevten yorum kaldırılır.
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Görev ve Comments İlişkisi (Çoktan çoğa)
             modelBuilder.Entity<Görev>()
                 .HasMany(g => g.Comments)
                 .WithOne(c => c.Görev)
                 .HasForeignKey(c => c.TaskId)
-                .OnDelete(DeleteBehavior.Cascade); // Görev silindiğinde ilişkili yorumlar da silinir.
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Görev>()
+                .HasOne(g => g.OnayDurumu)
+                .WithMany()
+                .HasForeignKey(g => g.OnayDurumuId)
+                .OnDelete(DeleteBehavior.Restrict); // Onay Durumu silindiğinde görevi silme
 
             // Comment tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Comment>()
@@ -241,9 +260,15 @@ namespace ProjeTakip.DataAccess.Data
                 new Status { StatusId = 4, StatusName = "Failed", StatusColor = "#FFFF00" }
             );
 
+            modelBuilder.Entity<OnayDurumu>().HasData(
+                new OnayDurumu { OnayDurumuId = 1, OnayDurumuAdi = "Onay Bekliyor" },
+                new OnayDurumu { OnayDurumuId = 2, OnayDurumuAdi = "Onaylandı" },
+                new OnayDurumu { OnayDurumuId = 3, OnayDurumuAdi = "Reddedildi" },
+                new OnayDurumu { OnayDurumuId = 4, OnayDurumuAdi = "Onay durumu yok" }
+            );
+
             var salt = BCrypt.Net.BCrypt.GenerateSalt();
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword("Admin123*", salt);
-            var hashedPassword2 = BCrypt.Net.BCrypt.HashPassword("Alperen.Ekici1*", salt);
 
             modelBuilder.Entity<User>().HasData(
                 new User
@@ -256,27 +281,11 @@ namespace ProjeTakip.DataAccess.Data
                     UserHash = hashedPassword,
                     GitHubProfile = "https://github.com/eyildizemre",
                     Enabled = true
-                },
-                new User
-                {
-                    UserId = 2,
-                    UserFName = "Alperen",
-                    UserLName = "Ekici",
-                    UserEmail = "alperen@gmail.com",
-                    UserSalt = salt,
-                    UserHash = hashedPassword2,
-                    GitHubProfile = "https://github.com/alperen",
-                    Enabled = true
                 }
             );
 
-            modelBuilder.Entity<Team>().HasData(
-                new Team { TeamId = 2, TeamName = ".NET Core MVC", TeamLeadId = 2, Enabled = true }
-            );
-
             modelBuilder.Entity<UserRole>().HasData(
-                new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true },
-                new UserRole { UserRoleId = 2, UserId = 2, RoleId = 2, Enabled = true });
+                new UserRole { UserRoleId = 1, UserId = 1, RoleId = 1, Enabled = true });
         }
     }
 }

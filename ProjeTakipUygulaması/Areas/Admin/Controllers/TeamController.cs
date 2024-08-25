@@ -54,15 +54,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // ModelState'teki hataları dökümle
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors)
-                {
-                    // Hataları konsolda veya logda görüntüle
-                    Console.WriteLine(error.ErrorMessage);
-                }
-
-                // Hatalar varsa formu yeniden yükle
                 teamVM.TeamLeads = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(ur => ur.RoleId == 2) && u.Enabled)
                     .Select(u => new SelectListItem
                     {
@@ -82,7 +73,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 
             try
             {
-                // 1) Teams tablosuna verileri ekliyoruz
                 var capacity = 1 + (teamVM.SelectedUserIds?.Count ?? 0);
                 var team = new Team
                 {
@@ -93,34 +83,30 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 };
 
                 _unitOfWork.Teams.Add(team);
-                _unitOfWork.SaveChanges();  // İlk olarak Teams tablosuna kaydediyoruz, böylece TeamId elde ediliyor
+                _unitOfWork.SaveChanges();
 
-                // 2) UserTeams tablosuna TeamLead için kayıt ekliyoruz
                 _unitOfWork.UserTeams.Add(new UserTeam
                 {
                     UserId = team.TeamLeadId,
-                    TeamId = team.TeamId,  // Yeni oluşturulan TeamId'yi kullanıyoruz
-                    RoleId = 2,  // TeamLead rolü
+                    TeamId = team.TeamId,
+                    RoleId = 2,
                     Enabled = true
                 });
 
-                // 3) UserTeams tablosuna her bir ekip üyesi için kayıt ekliyoruz
                 if (teamVM.SelectedUserIds != null && teamVM.SelectedUserIds.Any())
                 {
                     foreach (var userId in teamVM.SelectedUserIds)
                     {
-                        var userTeam = new UserTeam
+                        _unitOfWork.UserTeams.Add(new UserTeam
                         {
                             UserId = userId,
-                            TeamId = team.TeamId,  // Yeni oluşturulan TeamId'yi kullanıyoruz
+                            TeamId = team.TeamId,
                             RoleId = 3,
                             Enabled = true
-                        };
-
-                        _unitOfWork.UserTeams.Add(userTeam);
+                        });
                     }
 
-                    _unitOfWork.SaveChanges();  // Tüm UserTeams kayıtlarını veritabanına kaydediyoruz
+                    _unitOfWork.SaveChanges();
                 }
                 else
                 {
@@ -172,8 +158,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var capacity = 1 + (teamVM.SelectedUserIds?.Count ?? 0);
-                // 1) Teams tablosundaki bilgileri güncelle
                 var teamFromDb = _unitOfWork.Teams.GetFirstOrDefault(t => t.TeamId == teamVM.Team.TeamId);
                 if (teamFromDb == null)
                 {
@@ -182,26 +166,41 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
 
                 teamFromDb.TeamName = teamVM.Team.TeamName;
                 teamFromDb.TeamLeadId = teamVM.Team.TeamLeadId;
-                teamFromDb.Capacity = capacity;
 
-                _unitOfWork.Teams.Update(teamFromDb);
-
-                // 2) UserTeams tablosundaki bilgileri güncelle
                 var existingUserTeams = _unitOfWork.UserTeams.GetAll(ut => ut.TeamId == teamVM.Team.TeamId).ToList();
-                foreach (var userTeam in existingUserTeams)
+                var existingUserIds = existingUserTeams.Select(ut => ut.UserId).ToList();
+                var newSelectedUserIds = teamVM.SelectedUserIds ?? new List<int>();
+                var userIdsToRemove = existingUserIds.Except(newSelectedUserIds).ToList();
+                var userIdsToAdd = newSelectedUserIds.Except(existingUserIds).ToList();
+
+                // Eski TeamLead'in durumu kontrol ediliyor
+                var oldTeamLead = existingUserTeams.FirstOrDefault(ut => ut.RoleId == 2);
+                if (oldTeamLead != null)
                 {
-                    _unitOfWork.UserTeams.Remove(userTeam);  // Önce mevcut ilişkileri kaldırıyoruz
+                    if (newSelectedUserIds.Contains(oldTeamLead.UserId))
+                    {
+                        // Eğer eski TeamLead ekip üyesi olarak seçilmişse, rolü güncelleniyor
+                        oldTeamLead.RoleId = 3;
+                        _unitOfWork.UserTeams.Update(oldTeamLead);
+                    }
+                    else
+                    {
+                        // Eğer eski TeamLead ekip üyesi olarak seçilmemişse, kaydı devre dışı bırakılıyor
+                        oldTeamLead.Enabled = false;
+                        _unitOfWork.UserTeams.Update(oldTeamLead);
+                    }
                 }
 
-                _unitOfWork.UserTeams.Add(new UserTeam
+                foreach (var userId in userIdsToRemove)
                 {
-                    UserId = teamVM.Team.TeamLeadId,
-                    TeamId = teamVM.Team.TeamId,
-                    RoleId = 2,
-                    Enabled = true
-                });
+                    var userTeam = existingUserTeams.FirstOrDefault(ut => ut.UserId == userId);
+                    if (userTeam != null)
+                    {
+                        _unitOfWork.UserTeams.Remove(userTeam);
+                    }
+                }
 
-                foreach (var userId in teamVM.SelectedUserIds)
+                foreach (var userId in userIdsToAdd)
                 {
                     _unitOfWork.UserTeams.Add(new UserTeam
                     {
@@ -212,6 +211,22 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     });
                 }
 
+                // Yeni TeamLead ekleniyor
+                var newTeamLeadUserTeam = existingUserTeams.FirstOrDefault(ut => ut.UserId == teamVM.Team.TeamLeadId);
+                if (newTeamLeadUserTeam == null)
+                {
+                    _unitOfWork.UserTeams.Add(new UserTeam
+                    {
+                        UserId = teamVM.Team.TeamLeadId,
+                        TeamId = teamVM.Team.TeamId,
+                        RoleId = 2,
+                        Enabled = true
+                    });
+                }
+
+                teamFromDb.Capacity = 1 + newSelectedUserIds.Count;
+
+                _unitOfWork.Teams.Update(teamFromDb);
                 _unitOfWork.SaveChanges();
 
                 return RedirectToAction(nameof(Index));
@@ -246,7 +261,6 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Takımın ve ilişkili UserTeams kayıtlarının Enabled alanını false yap
             teamFromDb.Enabled = false;
             var userTeams = _unitOfWork.UserTeams.GetAll(ut => ut.TeamId == id).ToList();
             foreach (var userTeam in userTeams)

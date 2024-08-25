@@ -8,11 +8,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjeTakip.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class Tablolar : Migration
+    public partial class TablolarVeSeedData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "OnayDurumu",
+                columns: table => new
+                {
+                    OnayDurumuId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OnayDurumuAdi = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnayDurumu", x => x.OnayDurumuId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -186,16 +199,18 @@ namespace ProjeTakip.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    AssignedUserUserId = table.Column<int>(type: "int", nullable: false),
+                    TeamLeadId = table.Column<int>(type: "int", nullable: true),
+                    AssignedUserId = table.Column<int>(type: "int", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GitHubPush = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     TaskStatusId = table.Column<int>(type: "int", nullable: false),
                     TaskCommentId = table.Column<int>(type: "int", nullable: true),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
+                    OnayDurumuId = table.Column<int>(type: "int", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    CommentId = table.Column<int>(type: "int", nullable: true)
+                    CommentId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -212,6 +227,12 @@ namespace ProjeTakip.DataAccess.Migrations
                         principalColumn: "CommentId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Tasks_OnayDurumu_OnayDurumuId",
+                        column: x => x.OnayDurumuId,
+                        principalTable: "OnayDurumu",
+                        principalColumn: "OnayDurumuId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Tasks_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
@@ -224,17 +245,22 @@ namespace ProjeTakip.DataAccess.Migrations
                         principalColumn: "StatusId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tasks_Users_AssignedUserUserId",
-                        column: x => x.AssignedUserUserId,
+                        name: "FK_Tasks_Users_AssignedUserId",
+                        column: x => x.AssignedUserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tasks_Users_TeamLeadId",
+                        column: x => x.TeamLeadId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tasks_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -302,6 +328,16 @@ namespace ProjeTakip.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "OnayDurumu",
+                columns: new[] { "OnayDurumuId", "OnayDurumuAdi" },
+                values: new object[,]
+                {
+                    { 1, "Onay Bekliyor" },
+                    { 2, "Onaylandı" },
+                    { 3, "Reddedildi" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "RoleId", "RoleName" },
                 values: new object[,]
@@ -325,25 +361,12 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[,]
-                {
-                    { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.R0rn9PYG3WNk71mUKT5luGzyanFd8dC", "User", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6." },
-                    { 2, true, "https://github.com/alperen", "alperen@gmail.com", "Alperen", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6.Ty2e/G7OER/SJ6ol0iDo1lQ4OySwMhi", "Ekici", "$2a$11$VDNXk.2Ar8Sd7ge3c8KO6." }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Teams",
-                columns: new[] { "TeamId", "Capacity", "Enabled", "ProjectId", "TeamLeadId", "TeamName" },
-                values: new object[] { 2, null, true, null, 2, ".NET Core MVC" });
+                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$6U7ROVnCWAjGs9chevycC.zMXlayMyqXOIZk86Q0SbUZcnUsC/JQe", "User", "$2a$11$6U7ROVnCWAjGs9chevycC." });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
                 columns: new[] { "UserRoleId", "Enabled", "RoleId", "UserId" },
-                values: new object[,]
-                {
-                    { 1, true, 1, 1 },
-                    { 2, true, 2, 2 }
-                });
+                values: new object[] { 1, true, 1, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ProjectId",
@@ -391,14 +414,19 @@ namespace ProjeTakip.DataAccess.Migrations
                 column: "TeamLeadId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssignedUserUserId",
+                name: "IX_Tasks_AssignedUserId",
                 table: "Tasks",
-                column: "AssignedUserUserId");
+                column: "AssignedUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_CommentId",
                 table: "Tasks",
                 column: "CommentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_OnayDurumuId",
+                table: "Tasks",
+                column: "OnayDurumuId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_ProjectId",
@@ -416,6 +444,11 @@ namespace ProjeTakip.DataAccess.Migrations
                 name: "IX_Tasks_TaskStatusId",
                 table: "Tasks",
                 column: "TaskStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_TeamLeadId",
+                table: "Tasks",
+                column: "TeamLeadId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_UserId",
@@ -524,6 +557,9 @@ namespace ProjeTakip.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "OnayDurumu");
 
             migrationBuilder.DropTable(
                 name: "Status");
