@@ -21,19 +21,19 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="UserId" class="control-label">Atanan Kullanıcı</label> <!-- Bu kısım güncellendi -->
-        <select asp-for="UserId" class="form-control" asp-items="Model.Users">
-            <option value="">Bir kullanıcı seçin</option>
-        </select>
-        <span asp-validation-for="UserId" class="text-danger"></span> <!-- Bu kısım güncellendi -->
-    </div>
-
-    <div class="form-group">
         <label asp-for="ProjectId" class="control-label">Proje</label>
-        <select asp-for="ProjectId" class="form-control" asp-items="Model.Projects">
+        <select asp-for="ProjectId" class="form-control" asp-items="Model.Projects" id="projectSelect">
             <option value="">Bir proje seçin</option>
         </select>
         <span asp-validation-for="ProjectId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="UserId" class="control-label">Atanan Kullanıcı</label>
+        <select asp-for="UserId" class="form-control" asp-items="Model.Users" id="userSelect" disabled>
+            <option value="">Bir kullanıcı seçin</option>
+        </select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -57,29 +57,24 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Bugünün tarihi
+            // Tarihlerin ayarlanması (mevcut kodlar)
             var today = new Date().toISOString().split('T')[0];
-            // İki gün sonrası
             var twoDaysLater = new Date();
             twoDaysLater.setDate(twoDaysLater.getDate() + 2);
             var endDate = twoDaysLater.toISOString().split('T')[0];
 
-            // Tarihleri input alanlarına ata
             document.getElementById('startDate').value = today;
             document.getElementById('endDate').value = endDate;
 
-            // Başlangıç tarihi değiştiğinde bitiş tarihini güncelle
             document.getElementById('startDate').addEventListener('change', function () {
                 var startDate = new Date(this.value);
                 var minEndDate = new Date(startDate);
                 minEndDate.setDate(minEndDate.getDate() + 2);
                 var minEndDateStr = minEndDate.toISOString().split('T')[0];
 
-                // EndDate inputunun minimum değerini güncelle
                 var endDateInput = document.getElementById('endDate');
                 endDateInput.setAttribute('min', minEndDateStr);
 
-                // EndDate'in geçerli değeri minimum tarihten küçükse güncelle
                 if (new Date(endDateInput.value) < minEndDate) {
                     endDateInput.value = minEndDateStr;
                 }
@@ -91,6 +86,41 @@
             minEndDate.setDate(minEndDate.getDate() + 2);
             var minEndDateStr = minEndDate.toISOString().split('T')[0];
             document.getElementById('endDate').setAttribute('min', minEndDateStr);
+
+            // Kullanıcı dropdown'ı başlangıçta disabled olacak
+            var userDropdown = document.getElementById('userSelect');
+            userDropdown.disabled = true;
+
+            // Proje seçimi değiştiğinde kullanıcıları AJAX ile getir
+            var projectDropdown = document.getElementById('projectSelect');
+            projectDropdown.addEventListener('change', function () {
+                var projectId = this.value;
+
+                if (projectId) {
+                    // AJAX isteği gönder
+                    fetch('/TeamLead/Task/GetTeamMembersByProject?projectId=' + projectId)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Kullanıcı dropdown'ını temizle
+                            userDropdown.innerHTML = '<option value="">Bir kullanıcı seçin</option>';
+
+                            // Yeni kullanıcıları ekle
+                            data.forEach(user => {
+                                var option = document.createElement('option');
+                                option.value = user.value;
+                                option.text = user.text;
+                                userDropdown.appendChild(option);
+                            });
+
+                            // Dropdown'ı etkinleştir
+                            userDropdown.disabled = false;
+                        })
+                        .catch(error => console.error('Error:', error))
+                } else {
+                    // Proje seçilmediyse kullanıcı dropdown'ını devre dışı bırak
+                    userDropdown.disabled = true;
+                }
+            });
         });
     </script>
     @{

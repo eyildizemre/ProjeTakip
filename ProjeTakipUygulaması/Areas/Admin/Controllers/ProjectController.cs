@@ -154,6 +154,27 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     _unitOfWork.Projects.Add(project);
                     await _unitOfWork.SaveChangesAsync();
 
+                    // Proje oluşturulduktan sonra ProjectId'yi al
+                    var projectId = project.ProjectId;
+
+                    // Ekip üyelerini UserTeams tablosuna ekle
+                    var teamMembers = _unitOfWork.UserTeams.GetAll(ut => ut.TeamId == model.TeamId && ut.Enabled).ToList();
+                    foreach (var member in teamMembers)
+                    {
+                        var userTeam = new UserTeam
+                        {
+                            UserId = member.UserId,
+                            TeamId = (int)model.TeamId,
+                            ProjectId = projectId,
+                            RoleId = member.RoleId,
+                            Enabled = true
+                        };
+
+                        _unitOfWork.UserTeams.Add(userTeam);
+                    }
+
+                    await _unitOfWork.SaveChangesAsync();
+
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -243,6 +264,15 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                     project.EndDate = model.EndDate;
 
                     _unitOfWork.Projects.Update(project);
+
+                    // UserTeams tablosunu güncelle
+                    var userTeam = _unitOfWork.UserTeams.GetFirstOrDefault(ut => ut.TeamId == project.TeamId && ut.ProjectId == project.ProjectId);
+                    if (userTeam != null)
+                    {
+                        userTeam.UserId = (int)project.TeamLeadId;
+                        _unitOfWork.UserTeams.Update(userTeam);
+                    }
+
                     await _unitOfWork.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }

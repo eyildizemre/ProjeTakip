@@ -146,6 +146,12 @@ namespace ProjeTakip.DataAccess.Data
                 .HasForeignKey(ut => ut.RoleId)
                 .OnDelete(DeleteBehavior.Restrict); // Rol silindiğinde UserTeam kayıtları silinmez.
 
+            modelBuilder.Entity<UserTeam>()
+                .HasOne(ut => ut.Project)
+                .WithMany(p => p.UserTeams)
+                .HasForeignKey(ut => ut.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Görev tablosu ile diğer tablolar arasındaki ilişkiler
             // Görev ve Proje İlişkisi
             modelBuilder.Entity<Görev>()

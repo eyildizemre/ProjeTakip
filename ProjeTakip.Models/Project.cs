@@ -45,5 +45,6 @@ namespace ProjeTakip.Models
         public ICollection<Team> Teams { get; set; } // Proje ile ilişkili takımlar
         public ICollection<Comment> Comments { get; set; } // Proje ile ilişkili yorumlar
         public ICollection<Görev> Tasks { get; set; } // Proje ile ilişkili görevler
+        public ICollection<UserTeam> UserTeams { get; set; }
     }
 }

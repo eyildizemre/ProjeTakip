@@ -54,11 +54,7 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             var model = new TaskVM
             {
                 TeamLeadId = teamLeadId,
-                Users = _unitOfWork.Users.GetAll(u => u.Enabled).Select(u => new SelectListItem
-                {
-                    Text = u.UserFName + " " + u.UserLName,
-                    Value = u.UserId.ToString()
-                }).ToList(),
+                Users = new List<SelectListItem>(),
                 Projects = _unitOfWork.Projects.GetAll(p => p.Enabled && p.TeamLeadId == teamLeadId) // Sadece oturumdaki TeamLead'e ait projeler
                     .Select(p => new SelectListItem
                     {
@@ -444,5 +440,19 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult GetTeamMembersByProject(int projectId)
+        {
+            var users = _unitOfWork.UserTeams.GetAll(ut => ut.ProjectId == projectId && ut.RoleId == 3 && ut.User.Enabled, includeProperties: "User")
+                .Select(ut => new SelectListItem
+                {
+                    Text = ut.User.UserFName + " " + ut.User.UserLName,
+                    Value = ut.User.UserId.ToString()
+                }).ToList();
+
+            return Json(users);
+        }
+
     }
 }

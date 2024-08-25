@@ -44,7 +44,7 @@
                 @if (task.OnayDurumuId == 4 || task.OnayDurumuId == 3)
                 {
                     <td>
-                        @Html.ActionLink("Complete", "Complete", new { id = task.TaskId }, new { @class = "btn btn-success" })
+                        @Html.ActionLink("Tamamla", "Complete", new { id = task.TaskId }, new { @class = "btn btn-success" })
                     </td>
                 }
                 else if (task.OnayDurumuId == 2)

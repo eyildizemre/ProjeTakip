@@ -22,7 +22,11 @@ namespace ProjeTakip.Models
 		[ForeignKey("RoleId")]
 		public int RoleId { get; set; }
 
-		[MaxLength(7)]
+        [ForeignKey("Project")]
+        public int? ProjectId { get; set; }
+        public Project Project { get; set; }
+
+        [MaxLength(7)]
 		public string? UserColor { get; set; }
 
 		public bool Enabled { get; set; }
@@ -31,5 +35,5 @@ namespace ProjeTakip.Models
 		public User User { get; set; }
 		public Team Team { get; set; }
 		public Role Role { get; set; }
-	}
+    }
 }
