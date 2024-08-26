@@ -29,9 +29,13 @@ namespace ProjeTakip.Models
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
-		[ForeignKey("StatusId")]
-		public int ProjectStatusId { get; set; } = 1; // Team Lead ilk görevi verdiği zaman proje durumu 2 olacak
+        [MaxLength(255)]
+        public string? GitHubPush { get; set; }
 
+        [ForeignKey("StatusId")]
+		public int ProjectStatusId { get; set; } = 1; // Team Lead ilk görevi verdiği zaman proje durumu 2 olacak
+        [ForeignKey("OnayDurumuId")]
+        public int? OnayDurumuId { get; set; }
         public bool Enabled { get; set; }
 
         // Navigasyon Özellikleri
@@ -46,5 +50,6 @@ namespace ProjeTakip.Models
         public ICollection<Comment> Comments { get; set; } // Proje ile ilişkili yorumlar
         public ICollection<Görev> Tasks { get; set; } // Proje ile ilişkili görevler
         public ICollection<UserTeam> UserTeams { get; set; }
+        public OnayDurumu OnayDurumu { get; set; }
     }
 }

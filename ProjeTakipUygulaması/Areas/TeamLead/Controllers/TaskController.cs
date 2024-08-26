@@ -459,5 +459,103 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             return Json(users);
         }
 
+        [HttpGet]
+        public IActionResult GetProjects()
+        {
+            var teamLeadId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            var projects = _unitOfWork.Projects
+                .GetAll(p => p.Enabled && p.TeamLeadId == teamLeadId, includeProperties: "Team,TeamLead,Status,OnayDurumu")
+                .ToList();
+
+            var model = projects.Select(p => new ProjectVM
+            {
+                ProjectId = p.ProjectId,
+                ProjectName = p.ProjectName,
+                ProjectDescription = p.ProjectDescription,
+                TeamId = p.TeamId,
+                TeamName = p.Team?.TeamName,
+                TeamLeadId = p.TeamLeadId,
+                TeamLeadName = p.TeamLead != null ? $"{p.TeamLead.UserFName} {p.TeamLead.UserLName}" : "Atanmamış",
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                ProjectStatusId = p.ProjectStatusId,
+                ProjectStatusName = p.Status?.StatusName,
+                OnayDurumuId = p.OnayDurumuId ?? 4
+            }).ToList();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult DeliverProject(int id)
+        {
+            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == id, includeProperties: "TeamLead,Team,Status");
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var model = new DeliverProjectVM
+            {
+                ProjectId = project.ProjectId,
+                ProjectName = project.ProjectName,
+                ProjectDescription = project.ProjectDescription,
+                TeamName = project.Team?.TeamName,
+                TeamLeadName = $"{project.TeamLead?.UserFName} {project.TeamLead?.UserLName}",
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatusId = project.ProjectStatusId,
+                ProjectStatusName = project.Status?.StatusName,
+                GitHubPush = project.GitHubPush // Var olan GitHubPush linkini gösterir
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeliverProject(DeliverProjectVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var project = _unitOfWork.Projects.GetFirstOrDefault(p => p.ProjectId == model.ProjectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            project.ProjectStatusId = 2;
+            project.OnayDurumuId = 1;
+            project.GitHubPush = model.GitHubPush;
+            _unitOfWork.Projects.Update(project);
+
+            // Tüm admin kullanıcıları alıyoruz
+            var adminUsers = _unitOfWork.Users.GetAll(u => u.UserRoles.Any(r => r.RoleId == 1 && u.Enabled)).ToList();
+
+            foreach (var admin in adminUsers)
+            {
+                // Her admin için bir bildirim oluştur
+                var notification = new Notification
+                {
+                    SentById = HttpContext.Session.GetInt32("UserId"), // Gönderen TeamLead
+                    ReceivedById = admin.UserId, // Admin kullanıcıya gönder
+                    Subject = $"Proje Teslimi: {project.ProjectName}",
+                    Message = $"{project.ProjectName} isimli proje TeamLead tarafından teslim edilmiştir. GitHub Push Linki: {project.GitHubPush}",
+                    CreatedAt = DateTime.Now,
+                    ProjectId = project.ProjectId,
+                    Enabled = true
+                };
+                _unitOfWork.Notifications.Add(notification);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            TempData["Success"] = $"{project.ProjectName} projesi başarıyla teslim edildi.";
+            return RedirectToAction("GetProjects");
+        }
     }
 }

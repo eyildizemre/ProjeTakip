@@ -17,11 +17,11 @@
             <h3 class="mt-4">Hoşgeldin, @(Model.TeamLeadName ?? "Kullanıcı")!</h3>
 
             <!-- Takvim -->
-            <div class="text-end"><select id="eventSelector">
+            @* <div class="text-end"><select id="eventSelector">
                 <option value="tasks">Görevler</option>
                 <option value="projects">Projeler</option>
                 </select>
-            </div>
+            </div> *@
             <div class="card mt-2">
                 <div class="card-header">
                     Görev Takvimi
@@ -29,7 +29,6 @@
                 <div class="card-body">
                     <div id="calendar">
                         <!-- Takvim burada yer alacak -->
-                        @* Takvim entegrasyonu için JavaScript/CSS ekleyebilirsiniz *@
                     </div>
                 </div>
             </div>
@@ -120,12 +119,16 @@
         </div>
     </div>
 </div>
+<script src="~/js/calendar-setup.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
 
-        var events = @Html.Raw(Json.Serialize(Model.CalendarEvents));
+            var events = @Html.Raw(Json.Serialize(Model.CalendarEvents));
+
+        var enabledEvents = events.filter(event => event.IsEnabled);  // Sadece aktif olayları alıyoruz
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -133,25 +136,19 @@
             buttonText: {
                 today: "bugün"
             },
-            events: events,
-            // Burada takvim ayarlarını daha da özelleştirebilirsiniz
+            events: enabledEvents,
+            eventDidMount: function (info) {
+                if (info.event.extendedProps.isCritical) {
+                    info.el.style.backgroundColor = "red";
+                    info.el.style.borderColor = "red";
+                } else {
+                    info.el.style.backgroundColor = info.event.extendedProps.color;
+                    info.el.style.borderColor = info.event.extendedProps.color;
+                }
+            }
         });
 
         calendar.render();
-
-        // Select option değiştiğinde olayları güncelleme
-        eventSelector.addEventListener('change', function () {
-            var selectedValue = eventSelector.value;
-            if (selectedValue === "tasks") {
-                calendar.removeAllEvents(); // Önceki olayları kaldır
-                calendar.addEventSource(tasks); // Görevleri ekle
-            } else if (selectedValue === "projects") {
-                calendar.removeAllEvents(); // Önceki olayları kaldır
-                calendar.addEventSource(projects); // Projeleri ekle
-            }
-        });
     });
-
-    // Modelden gelen CalendarEvents verilerini JSON formatına dönüştürüp global bir değişkene atıyoruz
-    window.calendarEvents = @Html.Raw(Json.Serialize(Model.CalendarEvents));
 </script>
+}

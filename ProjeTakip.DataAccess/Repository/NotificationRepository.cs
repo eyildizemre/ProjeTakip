@@ -32,6 +32,7 @@ namespace ProjeTakip.DataAccess.Repository
 				objFromDb.IsRead = notification.IsRead;
 				objFromDb.TaskId = notification.TaskId;
 				objFromDb.ProjectId = notification.ProjectId;
+                objFromDb.Enabled = notification.Enabled;
             }
 		}
 	}

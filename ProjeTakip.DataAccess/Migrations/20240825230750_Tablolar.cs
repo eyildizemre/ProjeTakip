@@ -297,12 +297,19 @@ namespace ProjeTakip.DataAccess.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TeamId = table.Column<int>(type: "int", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: true),
                     UserColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserTeams", x => x.No);
+                    table.ForeignKey(
+                        name: "FK_UserTeams_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "ProjectId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserTeams_Roles_RoleId",
                         column: x => x.RoleId,
@@ -358,7 +365,7 @@ namespace ProjeTakip.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "Enabled", "GitHubProfile", "UserEmail", "UserFName", "UserHash", "UserLName", "UserSalt" },
-                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$o8fR6PU2y5Q6CZPdkikIAesCVqqJrw8/ma7X33IWUCPXauydVF0WS", "User", "$2a$11$o8fR6PU2y5Q6CZPdkikIAe" });
+                values: new object[] { 1, true, "https://github.com/eyildizemre", "admin@gmail.com", "Admin", "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO4kiFsCjK12agfZaZGmzKz5GdbFlF24.", "User", "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
@@ -474,6 +481,11 @@ namespace ProjeTakip.DataAccess.Migrations
                 name: "IX_UserRoles_UserId",
                 table: "UserRoles",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTeams_ProjectId",
+                table: "UserTeams",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserTeams_RoleId",

@@ -2,34 +2,108 @@
 
 <h2>Proje Detayları</h2>
 
-@if (Model != null) {
-<div>
-    <h3>@Model.ProjectName</h3>
-        <p><strong>Açıklama:</strong><div>@Html.Raw(Model.ProjectDescription)</div>
-    <p><strong>Ekip:</strong> @Model.TeamName</p>
-    <p><strong>Ekip Lideri:</strong> @Model.TeamLeadName</p>
-    <p><strong>Başlangıç Tarihi:</strong> @Model.StartDate.ToString("dd.MM.yyyy")</p>
-    <p><strong>Bitiş Tarihi:</strong> @Model.EndDate.ToString("dd.MM.yyyy")</p>
-    <p><strong>Proje Durumu:</strong> @Model.ProjectStatusName</p>
-    <p><strong>Ekip Kapasitesi:</strong> @Model.TeamCapacity</p>
-    <p><strong>Toplam Görev Sayısı:</strong> @Model.TotalTasks</p>
-    <p><strong>Başarılı Görev Sayısı:</strong> @Model.SuccessfulTasks</p>
-    <p><strong>Başarısız Görev Sayısı:</strong> @Model.FailedTasks</p>
+<div class="details-container">
+    <div class="detail-item">
+        <strong>Proje İsmi:</strong>
+        <p>@Model.ProjectName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Proje Açıklaması:</strong>
+        <div>@Html.Raw(Model.ProjectDescription)</div>
+    </div>
+
+    <div class="detail-item">
+        <strong>Takım:</strong>
+        <p>@Model.TeamName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Takım Lideri:</strong>
+        <p>@Model.TeamLeadName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Proje Durumu:</strong>
+        <p>@Model.ProjectStatusName</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Başlangıç Tarihi:</strong>
+        <p>@Model.StartDate.ToShortDateString()</p>
+    </div>
+
+    <div class="detail-item">
+        <strong>Bitiş Tarihi:</strong>
+        <p>@Model.EndDate.ToShortDateString()</p>
+    </div>
+
+    @if (Model.OnayDurumuId == 1)
+    {
+        <div class="detail-item">
+            <strong>GitHub Push URL:</strong>
+            <p>@Model.GitHubPush</p>
+        </div>
+
+        <form asp-action="RejectProject" method="post">
+            <div class="form-group">
+                <label for="CommentText">Yorum</label>
+                <textarea asp-for="CommentText" class="form-control"></textarea>
+                <span asp-validation-for="CommentText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="ProjectId" />
+                <button type="submit" class="btn btn-danger">Reddet</button>
+            </div>
+        </form>
+
+        <form asp-action="ApproveProject" method="post" style="display:inline;">
+            <input type="hidden" asp-for="ProjectId" />
+            <button type="submit" class="btn btn-success">Onayla</button>
+        </form>
+    }
+    <div class="form-group mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    </div>
 </div>
-}
-else {
-    <p>Proje bulunamadı.</p>
-}
-<a asp-action="Index" class="btn btn-primary">Geri Dön</a>
+
+<style>
+    .details-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .detail-item {
+        margin-bottom: 15px;
+    }
+
+        .detail-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-item p {
+            margin: 0;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+</style>
+
+@await Html.PartialAsync("_ValidationScriptsPartial")
 
 @section Scripts {
     <script>
         tinymce.init({
             selector: 'textarea',  // Tüm textarea elementlerine TinyMCE uygular
+            readonly: 1,
             plugins: 'lists link image preview',
             toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
             menubar: false,
             branding: false
-        });
+            });
     </script>
 }

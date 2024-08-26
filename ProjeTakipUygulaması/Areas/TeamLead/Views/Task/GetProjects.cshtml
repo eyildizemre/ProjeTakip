@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ProjeTakip.Models.ViewModels.ProjectVM>
+
+<h2>Projeler</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Proje Adı</th>
+            <th>Başlangıç Tarihi</th>
+            <th>Bitiş Tarihi</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var project in Model)
+        {
+            <tr>
+                <td>@project.ProjectName</td>
+                <td>@project.StartDate.ToShortDateString()</td>
+                <td>@project.EndDate.ToShortDateString()</td>
+                <td>@project.ProjectStatusName</td>
+                <td>
+                    @if (project.OnayDurumuId != 1)
+                    {
+                        <a asp-action="DeliverProject" asp-route-id="@project.ProjectId" class="btn btn-success">Teslim Et</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

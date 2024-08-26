@@ -12,8 +12,8 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240825123150_Tablolar")]
-    partial class Tablolar
+    [Migration("20240826003907_OnayDurumu")]
+    partial class OnayDurumu
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,6 +238,9 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("OnayDurumuId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -260,6 +263,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProjectId");
+
+                    b.HasIndex("OnayDurumuId");
 
                     b.HasIndex("ProjectStatusId");
 
@@ -438,9 +443,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$o8fR6PU2y5Q6CZPdkikIAesCVqqJrw8/ma7X33IWUCPXauydVF0WS",
+                            UserHash = "$2a$11$FDLHdfQUiwD6hrnKVMk75eK/7K5cVfDjCxJ13K6/IMfNrSdYOWIEK",
                             UserLName = "User",
-                            UserSalt = "$2a$11$o8fR6PU2y5Q6CZPdkikIAe"
+                            UserSalt = "$2a$11$FDLHdfQUiwD6hrnKVMk75e"
                         });
                 });
 
@@ -490,6 +495,9 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -504,6 +512,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("No");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("RoleId");
 
@@ -631,6 +641,10 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
+                    b.HasOne("ProjeTakip.Models.OnayDurumu", "OnayDurumu")
+                        .WithMany()
+                        .HasForeignKey("OnayDurumuId");
+
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
@@ -646,6 +660,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .WithMany("LeadProjects")
                         .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("OnayDurumu");
 
                     b.Navigation("Status");
 
@@ -693,6 +709,11 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.UserTeam", b =>
                 {
+                    b.HasOne("ProjeTakip.Models.Project", "Project")
+                        .WithMany("UserTeams")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ProjeTakip.Models.Role", "Role")
                         .WithMany("UserTeams")
                         .HasForeignKey("RoleId")
@@ -710,6 +731,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
 
                     b.Navigation("Role");
 
@@ -737,6 +760,8 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Navigation("Tasks");
 
                     b.Navigation("Teams");
+
+                    b.Navigation("UserTeams");
                 });
 
             modelBuilder.Entity("ProjeTakip.Models.Role", b =>

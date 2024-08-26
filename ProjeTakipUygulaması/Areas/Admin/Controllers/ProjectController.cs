@@ -103,7 +103,10 @@ namespace ProjeTakipUygulaması.Areas.Admin.Controllers
                 TeamCapacity = teamCapacity,
                 TotalTasks = project.Tasks?.Count ?? 0,
                 SuccessfulTasks = project.Tasks?.Count(t => t.TaskStatusId == 3) ?? 0,
-                FailedTasks = project.Tasks?.Count(t => t.TaskStatusId == 4) ?? 0
+                FailedTasks = project.Tasks?.Count(t => t.TaskStatusId == 4) ?? 0,
+
+                // OnayDurumuId'yi ekliyoruz
+                OnayDurumuId = project.OnayDurumuId // Bu satırın eklenmesi gerekiyor
             };
 
             return View(model);

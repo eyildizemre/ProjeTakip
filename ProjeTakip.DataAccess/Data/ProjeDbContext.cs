@@ -37,20 +37,20 @@ namespace ProjeTakip.DataAccess.Data
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Cascade); // Role silindiğinde ilgili UserRoles kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Role silindiğinde ilgili UserRoles kayıtları da silinir.
 
             modelBuilder.Entity<Role>()
                 .HasMany(r => r.UserTeams)
                 .WithOne(ut => ut.Role)
                 .HasForeignKey(ut => ut.RoleId)
-                .OnDelete(DeleteBehavior.Cascade); // Role silindiğinde ilgili UsersTeams kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Role silindiğinde ilgili UsersTeams kayıtları da silinir.
 
             // UserRole tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(u => u.UserRoles)
                 .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserRole kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili UserRole kayıtları da silinir.
 
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.Role)
@@ -81,7 +81,7 @@ namespace ProjeTakip.DataAccess.Data
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Project)
                 .HasForeignKey(c => c.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); // Proje silindiğinde ilişkili yorumlar da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Proje silindiğinde ilişkili yorumlar da silinir.
 
             // Team tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<Team>()
@@ -94,32 +94,32 @@ namespace ProjeTakip.DataAccess.Data
                 .HasOne(t => t.Project)
                 .WithMany(p => p.Teams)
                 .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); // Project silindiğinde ilişkili Teams kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Project silindiğinde ilişkili Teams kayıtları da silinir.
 
             modelBuilder.Entity<Team>()
                 .HasMany(t => t.UserTeams)
                 .WithOne(ut => ut.Team)
                 .HasForeignKey(ut => ut.TeamId)
-                .OnDelete(DeleteBehavior.Cascade); // Ekip silindiğinde ilişkili UserTeams kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Ekip silindiğinde ilişkili UserTeams kayıtları da silinir.
 
             // User tablosu ile diğer tablolar arasındaki ilişkiler
             modelBuilder.Entity<User>()
                 .HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserRoles kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili UserRoles kayıtları da silinir.
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.UserTeams)
                 .WithOne(ut => ut.User)
                 .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserTeams kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili UserTeams kayıtları da silinir.
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.LeadProjects)
                 .WithOne(p => p.TeamLead)
                 .HasForeignKey(p => p.TeamLeadId)
-                .OnDelete(DeleteBehavior.SetNull); // Kullanıcı silindiğinde LeadProjects'teki TeamLeadId null yapılır.
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde LeadProjects'teki TeamLeadId null yapılır.
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Tasks)
@@ -132,13 +132,13 @@ namespace ProjeTakip.DataAccess.Data
                 .HasOne(ut => ut.User)
                 .WithMany(u => u.UserTeams)
                 .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silindiğinde ilişkili UserTeam kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Kullanıcı silindiğinde ilişkili UserTeam kayıtları da silinir.
 
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Team)
                 .WithMany(t => t.UserTeams)
                 .HasForeignKey(ut => ut.TeamId)
-                .OnDelete(DeleteBehavior.Cascade); // Ekip silindiğinde ilişkili UserTeam kayıtları da silinir.
+                .OnDelete(DeleteBehavior.Restrict); // Ekip silindiğinde ilişkili UserTeam kayıtları da silinir.
 
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Role)
@@ -158,7 +158,7 @@ namespace ProjeTakip.DataAccess.Data
                 .HasOne(g => g.Project)
                 .WithMany(p => p.Tasks)
                 .HasForeignKey(g => g.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Görev ve TeamLead (User) İlişkisi
             modelBuilder.Entity<Görev>()

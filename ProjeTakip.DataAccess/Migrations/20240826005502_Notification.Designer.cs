@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjeTakip.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    partial class ProjeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240826005502_Notification")]
+    partial class Notification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,10 +241,6 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GitHubPush")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<int?>("OnayDurumuId")
                         .HasColumnType("int");
 
@@ -447,9 +446,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$8NPG68/cFf4t3OyKKSZLweYCE747mLJwoLl4YgABxBpx/1cSQB82S",
+                            UserHash = "$2a$11$bxa9hZ31GkSgVhvz5XVi2e5bwFtyDDyk1WMV1SQOoGh.v8U0kFq2G",
                             UserLName = "User",
-                            UserSalt = "$2a$11$8NPG68/cFf4t3OyKKSZLwe"
+                            UserSalt = "$2a$11$bxa9hZ31GkSgVhvz5XVi2e"
                         });
                 });
 

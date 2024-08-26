@@ -13,5 +13,7 @@ namespace ProjeTakip.Models
         public string End { get; set; }  
         public string BackgroundColor { get; set; }
         public string BorderColor { get; set; }
+        public bool IsCritical { get; set; }
+        public bool IsEnabled { get; set; }
     }
 }

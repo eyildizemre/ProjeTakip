@@ -1,0 +1,46 @@
+﻿@model ProjeTakip.Models.ViewModels.DeliverProjectVM
+
+<h2>Proje Teslimi</h2>
+
+<form asp-action="DeliverProject" method="post">
+    <input type="hidden" asp-for="ProjectId" />
+
+    <div class="form-group">
+        <label asp-for="ProjectName" class="control-label"></label>
+        <input asp-for="ProjectName" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ProjectDescription" class="control-label"></label>
+        <textarea asp-for="ProjectDescription" class="form-control" disabled></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TeamName" class="control-label"></label>
+        <input asp-for="TeamName" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TeamLeadName" class="control-label"></label>
+        <input asp-for="TeamLeadName" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartDate" class="control-label"></label>
+        <input asp-for="StartDate" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndDate" class="control-label"></label>
+        <input asp-for="EndDate" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GitHubPush" class="control-label">GitHub Push Linki</label>
+        <input asp-for="GitHubPush" class="form-control" />
+        <span asp-validation-for="GitHubPush" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Teslim Et</button>
+    <a class="btn btn-outline-warning mt-3" onclick="window.history.back()">Geri</a>
+</form>

@@ -3,33 +3,33 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container-fluid">
+<div class="container-fluid mt-3">
     <div class="row">
-        @* <div class="col-md-3">
-            <!-- Sidebar -->
-            <div class="list-group">
-                <a href="@Url.Action("AllUsers", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Denetimi</a>
-                <a href="@Url.Action("AddUser", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Ekle</a>
-                <a href="@Url.Action("Index", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Projeleri Görüntüle</a>
-                <a href="@Url.Action("Create", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Ekle</a>
-                <a href="@Url.Action("Edit", "Project", new { area = "Admin" })" class="list-group-item list-group-item-action">Proje Düzenle</a>
-                <a href="@Url.Action("Index", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekipleri Görüntüle</a>
-                <a href="@Url.Action("Create", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Ekle</a>
-                <a href="@Url.Action("Edit", "Team", new { area = "Admin" })" class="list-group-item list-group-item-action">Ekip Düzenle</a>
-                <a href="@Url.Action("Index", "User", new { area = "Admin" })" class="list-group-item list-group-item-action">Kullanıcı Yönetimi</a>
-                <a href="@Url.Action("Index", "Notification", new { area = "Admin" })" class="list-group-item list-group-item-action">Bildirimler</a>
-            </div>
-        </div> *@
         <div class="col-md-9">
-            <!-- Admin Dashboard Content -->
-            <h3 class="mt-4">Hoşgeldiniz, Admin</h3>
+            <div>
+                @if (Model.PendingProjectCount > 0)
+                {
+                    <h3>Hoşgeldin, @Model.AdminName.</h3>
+                    <p class="text-bg-warning">Onaylanmayı bekleyen @Model.PendingProjectCount proje var.</p>
+                }
+                else
+                {
+                    <h3>Hoşgeldin, @Model.AdminName.</h3>
+                }
+            </div>
+            <div>
+                <div class="text-center">
+                    <h4>Proje Teslim Tarihleri</h4>
+                </div>
+                <ul>
+                    @foreach (var messageWithColor in Model.ProjectMessagesWithColor)
+                    {
+                        <li style="color: @messageWithColor.Color;">@messageWithColor.Message</li>
+                    }
+                </ul>
+            </div>
 
             <!-- Takvim -->
-            <div class="text-end"><select id="eventSelector">
-                <option value="tasks">Görevler</option>
-                <option value="projects">Projeler</option>
-                </select>
-            </div>
             <div class="card mt-2">
                 <div class="card-header">
                     Görev Takvimi
@@ -37,7 +37,6 @@
                 <div class="card-body">
                     <div id="calendar">
                         <!-- Takvim burada yer alacak -->
-                        @* Takvim entegrasyonu için JavaScript/CSS ekleyebilirsiniz *@
                     </div>
                 </div>
             </div>
@@ -130,7 +129,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
 
         var events = @Html.Raw(Json.Serialize(Model.CalendarEvents));
@@ -142,24 +141,18 @@
                 today: "bugün"
             },
             events: events,
-            // Burada takvim ayarlarını daha da özelleştirebilirsiniz
+            eventDidMount: function (info) {
+                // Projenin bitimine bir hafta kalmışsa kırmızı yap
+                if (info.event.extendedProps.isCritical) {
+                    info.el.style.backgroundColor = "red";
+                    info.el.style.borderColor = "red";
+                } else {
+                    info.el.style.backgroundColor = info.event.extendedProps.color;
+                    info.el.style.borderColor = info.event.extendedProps.color;
+                }
+            }
         });
 
         calendar.render();
-
-        // Select option değiştiğinde olayları güncelleme
-        eventSelector.addEventListener('change', function () {
-            var selectedValue = eventSelector.value;
-            if (selectedValue === "tasks") {
-                calendar.removeAllEvents(); // Önceki olayları kaldır
-                calendar.addEventSource(tasks); // Görevleri ekle
-            } else if (selectedValue === "projects") {
-                calendar.removeAllEvents(); // Önceki olayları kaldır
-                calendar.addEventSource(projects); // Projeleri ekle
-            }
-        });
     });
-
-    // Modelden gelen CalendarEvents verilerini JSON formatına dönüştürüp global bir değişkene atıyoruz
-    window.calendarEvents = @Html.Raw(Json.Serialize(Model.CalendarEvents));
 </script>

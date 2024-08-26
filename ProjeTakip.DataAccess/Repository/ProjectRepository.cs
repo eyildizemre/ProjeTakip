@@ -30,8 +30,10 @@ namespace ProjeTakip.DataAccess.Repository
 				objFromDb.TeamLead = project.TeamLead;
 				objFromDb.StartDate = project.StartDate;
 				objFromDb.EndDate = project.EndDate;
-				objFromDb.ProjectStatusId = project.ProjectStatusId;
-				objFromDb.Enabled = project.Enabled;
+                objFromDb.GitHubPush = project.GitHubPush;
+                objFromDb.ProjectStatusId = project.ProjectStatusId;
+                objFromDb.OnayDurumuId = project.OnayDurumuId;
+                objFromDb.Enabled = project.Enabled;
 			}
 		}
 	}

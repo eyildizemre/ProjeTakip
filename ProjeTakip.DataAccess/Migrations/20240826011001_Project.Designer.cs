@@ -12,8 +12,8 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    [Migration("20240825135009_UpdateProjectWithUserTeams")]
-    partial class UpdateProjectWithUserTeams
+    [Migration("20240826011001_Project")]
+    partial class Project
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,6 +148,9 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsRead")
                         .HasColumnType("bit");
 
@@ -238,6 +241,13 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("GitHubPush")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("OnayDurumuId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -260,6 +270,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProjectId");
+
+                    b.HasIndex("OnayDurumuId");
 
                     b.HasIndex("ProjectStatusId");
 
@@ -438,9 +450,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$YqTcQDleUbSbxZqdkYpp9uSdCc.VyQNoYxNGnCRvfyY/jF0k6SEmC",
+                            UserHash = "$2a$11$8NPG68/cFf4t3OyKKSZLweYCE747mLJwoLl4YgABxBpx/1cSQB82S",
                             UserLName = "User",
-                            UserSalt = "$2a$11$YqTcQDleUbSbxZqdkYpp9u"
+                            UserSalt = "$2a$11$8NPG68/cFf4t3OyKKSZLwe"
                         });
                 });
 
@@ -636,6 +648,10 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
+                    b.HasOne("ProjeTakip.Models.OnayDurumu", "OnayDurumu")
+                        .WithMany()
+                        .HasForeignKey("OnayDurumuId");
+
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
@@ -651,6 +667,8 @@ namespace ProjeTakip.DataAccess.Migrations
                         .WithMany("LeadProjects")
                         .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("OnayDurumu");
 
                     b.Navigation("Status");
 

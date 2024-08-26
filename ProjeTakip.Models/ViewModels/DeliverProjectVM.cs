@@ -1,24 +1,31 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ProjeTakip.Models.ViewModels
 {
-    public class ProjectDetailsVM
+    public class DeliverProjectVM
     {
         public int ProjectId { get; set; }
+        [ValidateNever]
         public string ProjectName { get; set; }
+        [ValidateNever]
         public string ProjectDescription { get; set; }
+        [ValidateNever]
         public string TeamName { get; set; }
+        [ValidateNever]
         public string TeamLeadName { get; set; }
-        public int TeamCapacity { get; set; }
-        public int TotalTasks { get; set; }  // Mevcut Task sayısı
-        public int SuccessfulTasks { get; set; }  // Başarılı Task sayısı
-        public int FailedTasks { get; set; }  // Başarısız Task sayısı
+        [ValidateNever]
         public DateTime StartDate { get; set; }
+        [ValidateNever]
         public DateTime EndDate { get; set; }
+        [ValidateNever]
+        public int ProjectStatusId { get; set; }
+        [ValidateNever]
         public string ProjectStatusName { get; set; }
         public string GitHubPush { get; set; }
-        public int? OnayDurumuId { get; set; }
-        public string? CommentText { get; set; }
     }
 }

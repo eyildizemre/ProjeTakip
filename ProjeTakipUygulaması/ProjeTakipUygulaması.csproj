@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjeTakip.DataAccess\ProjeTakip.DataAccess.csproj" />
+    <ProjectReference Include="..\Utility\ProjeTakip.Utility.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjeTakip.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using ProjeTakip.DataAccess.Data;
 namespace ProjeTakip.DataAccess.Migrations
 {
     [DbContext(typeof(ProjeDbContext))]
-    partial class ProjeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240825230750_Tablolar")]
+    partial class Tablolar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,9 +148,6 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.Property<bool?>("IsRead")
                         .HasColumnType("bit");
 
@@ -238,13 +238,6 @@ namespace ProjeTakip.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GitHubPush")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int?>("OnayDurumuId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -267,8 +260,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProjectId");
-
-                    b.HasIndex("OnayDurumuId");
 
                     b.HasIndex("ProjectStatusId");
 
@@ -447,9 +438,9 @@ namespace ProjeTakip.DataAccess.Migrations
                             GitHubProfile = "https://github.com/eyildizemre",
                             UserEmail = "admin@gmail.com",
                             UserFName = "Admin",
-                            UserHash = "$2a$11$8NPG68/cFf4t3OyKKSZLweYCE747mLJwoLl4YgABxBpx/1cSQB82S",
+                            UserHash = "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO4kiFsCjK12agfZaZGmzKz5GdbFlF24.",
                             UserLName = "User",
-                            UserSalt = "$2a$11$8NPG68/cFf4t3OyKKSZLwe"
+                            UserSalt = "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO"
                         });
                 });
 
@@ -645,10 +636,6 @@ namespace ProjeTakip.DataAccess.Migrations
 
             modelBuilder.Entity("ProjeTakip.Models.Project", b =>
                 {
-                    b.HasOne("ProjeTakip.Models.OnayDurumu", "OnayDurumu")
-                        .WithMany()
-                        .HasForeignKey("OnayDurumuId");
-
                     b.HasOne("ProjeTakip.Models.Status", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
@@ -664,8 +651,6 @@ namespace ProjeTakip.DataAccess.Migrations
                         .WithMany("LeadProjects")
                         .HasForeignKey("TeamLeadId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("OnayDurumu");
 
                     b.Navigation("Status");
 

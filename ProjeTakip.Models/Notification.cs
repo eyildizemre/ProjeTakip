@@ -35,6 +35,8 @@ namespace ProjeTakip.Models
         // Bildirimin okunma durumu
         public bool? IsRead { get; set; } = false;
 
+        public bool Enabled { get; set; }
+
         // Görevle İlişkili Bildirim
         [ForeignKey("TaskId")]
         public int? TaskId { get; set; }

@@ -13,18 +13,19 @@
     <link rel="stylesheet" href="~/css/calendar.css" />
     <link rel="stylesheet" href="~/css/styles.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info bg-gradient border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow">
             <div class="container-fluid">
                 <div class="navbar-collapse collapse d-sm-inline-flex">
-                    <span class="col-12 text-center">Proje Takip</span>
+                    <h3 class="col-12 text-center"> <i class="bi bi-arrow-repeat"></i> Proje Takip</h3>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="d-flex" id="wrapper">
+    <div class="d-flex mt-0" id="wrapper">
         <!-- Sidebar-->
         @{
             var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
@@ -53,7 +54,7 @@
                 {
                 ("Ana Sayfa", "DashBoard", "Index", "TeamLead"),
                 ("Profil Yönetimi", "Profile", "Index", ""),
-                ("Projeler", "Project", "Index", "TeamLead"),
+                ("Projeler", "Task", "GetProjects", "TeamLead"),
                 ("Görevler", "Task", "Index", "TeamLead"),
                 ("Bildirimler", "Notification", "Index", "TeamLead"),
                 ("Çıkış", "Account", "Logout", "")
@@ -99,7 +100,7 @@
         </div>
     </footer>
     <script src="~/js/scripts.js"></script>
-    <script src="~/js/calendar.js"></script>
+    
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/wfkxiwmjo83b0u316rfx66aoh47bq4cle93drhh82hxb09b4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>

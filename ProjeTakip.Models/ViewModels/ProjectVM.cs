@@ -44,6 +44,14 @@ namespace ProjeTakip.Models.ViewModels
         [ValidateNever]
         public string ProjectStatusName { get; set; } // Proje durumunun ismi
 
+        [ValidateNever]
+        [Display(Name = "Onay Durumu")]
+        public int OnayDurumuId { get; set; }  // Onay Durumu ID
+
+        [ValidateNever]
+        [Display(Name = "Onay Durumu")]
+        public string OnayDurumuAdi { get; set; }  // Onay Durumu ismi
+
         public bool Enabled { get; set; }
 
         [ValidateNever]

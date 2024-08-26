@@ -5,14 +5,14 @@
 namespace ProjeTakip.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateProjectWithUserTeams : Migration
+    public partial class OnayDurumu : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "ProjectId",
-                table: "UserTeams",
+                name: "OnayDurumuId",
+                table: "Projects",
                 type: "int",
                 nullable: true);
 
@@ -21,43 +21,42 @@ namespace ProjeTakip.DataAccess.Migrations
                 keyColumn: "UserId",
                 keyValue: 1,
                 columns: new[] { "UserHash", "UserSalt" },
-                values: new object[] { "$2a$11$YqTcQDleUbSbxZqdkYpp9uSdCc.VyQNoYxNGnCRvfyY/jF0k6SEmC", "$2a$11$YqTcQDleUbSbxZqdkYpp9u" });
+                values: new object[] { "$2a$11$FDLHdfQUiwD6hrnKVMk75eK/7K5cVfDjCxJ13K6/IMfNrSdYOWIEK", "$2a$11$FDLHdfQUiwD6hrnKVMk75e" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTeams_ProjectId",
-                table: "UserTeams",
-                column: "ProjectId");
+                name: "IX_Projects_OnayDurumuId",
+                table: "Projects",
+                column: "OnayDurumuId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserTeams_Projects_ProjectId",
-                table: "UserTeams",
-                column: "ProjectId",
-                principalTable: "Projects",
-                principalColumn: "ProjectId",
-                onDelete: ReferentialAction.Restrict);
+                name: "FK_Projects_OnayDurumu_OnayDurumuId",
+                table: "Projects",
+                column: "OnayDurumuId",
+                principalTable: "OnayDurumu",
+                principalColumn: "OnayDurumuId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_UserTeams_Projects_ProjectId",
-                table: "UserTeams");
+                name: "FK_Projects_OnayDurumu_OnayDurumuId",
+                table: "Projects");
 
             migrationBuilder.DropIndex(
-                name: "IX_UserTeams_ProjectId",
-                table: "UserTeams");
+                name: "IX_Projects_OnayDurumuId",
+                table: "Projects");
 
             migrationBuilder.DropColumn(
-                name: "ProjectId",
-                table: "UserTeams");
+                name: "OnayDurumuId",
+                table: "Projects");
 
             migrationBuilder.UpdateData(
                 table: "Users",
                 keyColumn: "UserId",
                 keyValue: 1,
                 columns: new[] { "UserHash", "UserSalt" },
-                values: new object[] { "$2a$11$o8fR6PU2y5Q6CZPdkikIAesCVqqJrw8/ma7X33IWUCPXauydVF0WS", "$2a$11$o8fR6PU2y5Q6CZPdkikIAe" });
+                values: new object[] { "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO4kiFsCjK12agfZaZGmzKz5GdbFlF24.", "$2a$11$gkTBE0ZFDNwT4a3rZc2iKO" });
         }
     }
 }

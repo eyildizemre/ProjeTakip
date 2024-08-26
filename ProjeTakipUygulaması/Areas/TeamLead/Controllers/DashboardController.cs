@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProjeTakip.DataAccess.Repository.IRepository;
 using ProjeTakip.Models;
 using ProjeTakip.Models.ViewModels;
+using ProjeTakip.Utility;
 using System.Threading.Tasks;
 
 namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
@@ -20,8 +21,8 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // Giriş yapan kullanıcının ID'sini al
-            var userId = HttpContext.Session.GetInt32("UserId");
+            var user = HttpContext.Session.GetString("UserId");
+            var userId = Convert.ToInt32(user);
 
             // TeamLead'in yönettiği projeleri al
             var projects = _unitOfWork.Projects.GetAll(p => p.TeamLeadId == userId && p.Enabled, includeProperties: "Team,Status");
@@ -29,36 +30,41 @@ namespace ProjeTakipUygulaması.Areas.TeamLead.Controllers
             // TeamLead'e atanmış görevleri al
             var tasks = _unitOfWork.Tasks.GetAll(t => t.TeamLeadId == userId && t.Enabled, includeProperties: "Status");
 
-            // CalendarEvent listesi oluştur
             var calendarEvents = new List<CalendarEvent>();
 
-            // Projeleri CalendarEvent olarak ekle
             foreach (var project in projects)
             {
+                var daysUntilDue = (project.EndDate - DateTime.Now).Days;
+                bool isCritical = daysUntilDue <= 7;
+
                 calendarEvents.Add(new CalendarEvent
                 {
                     Title = project.ProjectName,
                     Start = project.StartDate.ToString("yyyy-MM-dd"),
-                    End = project.EndDate.ToString("yyyy-MM-dd"),
-                    BackgroundColor = "#007bff", // Proje için renk
-                    BorderColor = "#007bff"
+                    End = project.EndDate.AddDays(1).ToString("yyyy-MM-dd"),  // Bitiş tarihini bir gün uzatıyoruz
+                    BackgroundColor = isCritical ? "red" : HelperFunctions.GetRandomColor(),
+                    BorderColor = isCritical ? "red" : HelperFunctions.GetRandomColor(),
+                    IsCritical = isCritical,
+                    IsEnabled = project.Enabled
                 });
             }
 
-            // Görevleri CalendarEvent olarak ekle
             foreach (var task in tasks)
             {
+                var daysUntilDue = (task.EndDate - DateTime.Now).Days;
+                bool isCritical = daysUntilDue <= 7;
+
                 calendarEvents.Add(new CalendarEvent
                 {
                     Title = task.TaskName,
                     Start = task.StartDate.ToString("yyyy-MM-dd"),
-                    End = task.EndDate.ToString("yyyy-MM-dd"),
-                    BackgroundColor = "#28a745", // Görev için renk
-                    BorderColor = "#28a745"
+                    End = task.EndDate.AddDays(1).ToString("yyyy-MM-dd"),  // Bitiş tarihini bir gün uzatıyoruz
+                    BackgroundColor = isCritical ? "red" : "green",
+                    BorderColor = isCritical ? "red" : "green",
+                    IsCritical = isCritical,
+                    IsEnabled = task.Enabled
                 });
             }
-
-            // Modeli oluştur ve view'a gönder
             var x = HttpContext.Session.GetString("UserFName");
             var model = new TeamLeadVM
             {
